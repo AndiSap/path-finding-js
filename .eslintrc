@@ -1,0 +1,6 @@
+{
+  "printWidth": 160,
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  }
+}

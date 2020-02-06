@@ -1,0 +1,26 @@
+{
+  "name": "path-finding-js",
+  "version": "0.0.1",
+  "description": "JS logic for visualizing path finding algorithm",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://andreas_saplacan@bitbucket.org/andreas_saplacan/path-finding-js.git"
+  },
+  "author": "Andreas Saplacan",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/andreas_saplacan/path-finding-js#readme",
+  "contributors": [
+    {
+      "name": "Andreas Saplacan",
+      "email": "andreas.saplacan@student.csulb.edu"
+    }
+  ],
+  "dependencies": {
+    "eslint": "^6.8.0"
+  }
+}
