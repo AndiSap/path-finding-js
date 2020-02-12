@@ -6,7 +6,7 @@ I can include as many plantuml segments as I want in my Markdown, and the diagra
 
 ```plantuml
 @startuml
-    scale 2
+    scale 3
     skinparam backgroundColor #EEEBDC
     actor Customer
     Customer -> "login()" : username & password
