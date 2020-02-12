@@ -10,7 +10,7 @@ I can include as many plantuml segments as I want in my Markdown, and the diagra
     skinparam backgroundColor #EEEBDC
     actor Customer
     Customer -> "login()" : username & password
-    "login()" -> Customer : session toPken
+    "login()" -> Customer : session token
     activate "login()"
     Customer -> "placeOrder()" : session token, order info
     "placeOrder()" -> Customer : ok
