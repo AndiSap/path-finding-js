@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "JS logic for visualizing path finding algorithm",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/index.js"
@@ -21,6 +22,7 @@
     }
   ],
   "dependencies": {
-    "eslint": "^6.8.0"
+    "eslint": "^6.8.0",
+    "heap": "^0.2.6"
   }
 }
