@@ -11,7 +11,7 @@ class Dijkstra {
   /**
    * Find and returns the shortest path.
    */
-  findShortestPath = (start, end, grid, colorCell) => {
+  findShortestPath = (start, end, grid, getVisitedElement) => {
     let startNode = grid.getNode(start.x, start.y);
     let endNode = grid.getNode(end.x, end.y);
     let node, allCurrentNeighbors, neighbor;
@@ -46,15 +46,9 @@ class Dijkstra {
           neighbor.fCost = neighbor.gCost + neighbor.hCost;
           neighbor.parent = node;
 
-          // if (!neighbor.opened) {
           nodeList.push(neighbor);
-          // colorCell( {neighbor.x, neighbor.y} );
-          this.waitFor(10);
-          console.log("Visited node: (" + neighbor.x + "," + neighbor.y + ")");
+          getVisitedElement(neighbor.x, neighbor.y);
           neighbor.opened = true;
-          // } else {
-          //   nodeList.updateItem(neighbor); // the neighbor can be reached with smaller cost, update it in list
-          // }
         }
       }
     }
@@ -70,14 +64,6 @@ class Dijkstra {
     }
     let shortestPathReversed = shortestPath.reverse();
     return shortestPathReversed;
-  };
-
-  waitFor = milliseconds => {
-    var startTime = new Date().getTime();
-    var endTime = startTime;
-    while (endTime < startTime + milliseconds) {
-      endTime = new Date().getTime();
-    }
   };
 }
 

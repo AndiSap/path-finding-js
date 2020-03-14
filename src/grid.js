@@ -1,6 +1,5 @@
 /**
  * The Grid class, encapsulates layout of nodes.
- * @param intput  0-1 matrix representing the walkable status of nodes ( 0 = walkable; 1 = blocked )
  */
 class Grid {
   constructor(input) {
