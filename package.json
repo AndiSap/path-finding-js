@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "description": "JS logic for visualizing path finding algorithm",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "browserify src/clickableGrid.js -o src/bundled/bundle.js [ babelify --presets: ['es2015', 'stage-1', 'react']]; node entryPoint.js"
   },
   "repository": {
     "type": "git",
@@ -21,6 +22,11 @@
     }
   ],
   "dependencies": {
-    "eslint": "^6.8.0"
+    "babelify": "^10.0.0",
+    "browserfy": "^1.0.0",
+    "eslint": "^6.8.0",
+    "express": "^4.17.1",
+    "heap": "^0.2.6",
+    "http-server": "^0.12.1"
   }
 }
