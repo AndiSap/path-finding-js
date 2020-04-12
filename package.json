@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "browserify src/clickableGrid.js -o src/bundled/bundle.js [ babelify --presets: ['es2015', 'stage-1', 'react']] &&  node entryPoint.js"
+    "start": "browserify src/javascript/index.js -o src/bundled/bundle.js [ babelify --presets: ['es2015', 'stage-1', 'react']] &&  node entryPoint.js"
   },
   "repository": {
     "type": "git",

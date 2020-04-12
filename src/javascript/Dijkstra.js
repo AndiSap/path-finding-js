@@ -9,7 +9,7 @@ class Dijkstra {
   }
 
   /**
-   * Find and returns the shortest path.
+   * Find and returns the shortest path
    */
   findShortestPath = (start, end, grid, getVisitedElement) => {
     let startNode = grid.getNode(start.x, start.y);
@@ -56,7 +56,10 @@ class Dijkstra {
     return null; // if it cannot find any path, return empty list
   };
 
-  shortestPath = endNode => {
+  /**
+   * creates shortest path in right order (from start to end)
+   */
+  shortestPath = (endNode) => {
     let shortestPath = [{ x: endNode.x, y: endNode.y }];
     while (endNode.parent != null) {
       endNode = endNode.parent;

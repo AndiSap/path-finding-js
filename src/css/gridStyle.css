@@ -1,16 +1,27 @@
 .grid {
-  margin: 1em auto;
+  /* margin: 1em auto; */
   border-collapse: collapse;
 }
+
 .grid td {
   cursor: pointer;
   width: 30px;
   height: 30px;
   border: 1px solid #ccc;
 }
+
 .grid td.clicked {
   background-color: yellow;
 }
+
 .grid tb.visited {
   background-color: lightblue;
+}
+
+@media (min-width: 768px) {
+  .col-md-9 {
+    margin: 1em auto;
+    flex: 0 0 75%;
+    max-width: 75%;
+  }
 }

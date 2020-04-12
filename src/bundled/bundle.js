@@ -379,188 +379,6 @@ module.exports = require('./lib/heap');
 }).call(this);
 
 },{}],3:[function(require,module,exports){
-let alreadyExecuted = false;
-
-let lastClicked;
-let grid = createGrid(24, 24, function(el, row, col, i) {
-  el.className = "clicked";
-  // if (lastClicked) {
-  // lastClicked.className = "";
-  if (startPoint.x == undefined) {
-    setStartPoint(col, row);
-  } else if (endPoint.x == undefined) {
-    setEndPoint(col, row);
-  } else {
-    // just temporary for starting algorithm
-    if (col == 23 && row == 23 && !alreadyExecuted) {
-      console.log("Starting algorithm");
-      startAlgorithm();
-      alreadyExecuted = true;
-    } else if (col == 0 && row == 23 && alreadyExecuted) {
-      clearGrid();
-    } else {
-      setWall(col, row);
-    }
-  }
-  // }
-  // lastClicked = el;
-});
-
-document.body.appendChild(grid);
-
-let Grid = require("./grid");
-let Dijkstra = require("./dijkstra");
-let visited = [];
-let timeout = 1; // in ms
-let timeWaited = 0;
-let startPoint = {
-  x: undefined,
-  y: undefined
-};
-let endPoint = {
-  x: undefined,
-  y: undefined
-};
-let walls = [];
-
-/**
- * If walls are added, change matrix cell to 1
- */
-let matrix = new Array(24);
-for (i = 0; i < 24; i++) {
-  matrix[i] = new Array(24);
-  for (j = 0; j < 24; j++) {
-    matrix[i][j] = 0;
-  }
-}
-
-function createGrid(rows, cols, callback) {
-  var i = 0;
-  var grid = document.createElement("table");
-  grid.className = "grid";
-  for (var r = 0; r < rows; ++r) {
-    var tr = grid.appendChild(document.createElement("tr"));
-    for (var c = 0; c < cols; ++c) {
-      var cell = tr.appendChild(document.createElement("td"));
-      cell.addEventListener(
-        "click",
-        (function(el, r, c, i) {
-          return function() {
-            callback(el, r, c, i);
-          };
-        })(cell, r, c, i),
-        false
-      );
-    }
-  }
-  return grid;
-}
-
-/**
- * Adds visited element to list
- */
-function getVisitedElement(row, column) {
-  visited.push({ x: row, y: column });
-}
-
-/**
- * Sets color of start and endpoint
- */
-function setElement(x, y, isStart, isWall) {
-  let element = grid.rows[x].cells[y];
-  if (isWall) element.style.backgroundColor = "black";
-  if (isStart) element.style.backgroundColor = "lightgreen";
-  if (!isStart && !isWall) element.style.backgroundColor = "indianred";
-}
-
-let createMatrix = rows => {
-  /**
-   * If walls are added, change matrix cell to 1
-   */
-  let matrix = new Array(rows);
-  for (i = 0; i < rows; i++) {
-    matrix[i] = new Array(rows);
-    for (j = 0; j < rows; j++) {
-      matrix[i][j] = 0;
-    }
-  }
-  return matrix;
-};
-
-let setStartPoint = (row, col) => {
-  startPoint = { x: col, y: row };
-  setElement(startPoint.x, startPoint.y, true);
-  console.log(`startpoint: (${startPoint.x}, ${startPoint.y})`);
-};
-
-let setEndPoint = (row, col) => {
-  endPoint = { x: col, y: row };
-  setElement(endPoint.x, endPoint.y, false);
-  console.log(`endpoint: (${endPoint.x}, ${endPoint.y})`);
-};
-
-let setWall = (row, col) => {
-  console.log(`Wall: (${col}, ${row})`);
-  walls.push({ x: col, y: row });
-  matrix[row][col] = 1;
-  setElement(col, row, false, true);
-};
-
-let clearGrid = () => {
-  console.log("Clearing grid");
-  startPoint = { x: undefined, y: undefined };
-  endPoint = { x: undefined, y: undefined };
-  walls = [];
-  visited = [];
-
-  for (let x = 0; x < matrix.length; x++) {
-    for (let y = 0; y < matrix[0].length; y++) {
-      grid.rows[x].cells[y].style.backgroundColor = "white";
-    }
-  }
-  alreadyExecuted = false;
-  matrix = createMatrix(24);
-  timeWaited = 0;
-};
-
-let startAlgorithm = () => {
-  let intputGrid = new Grid(matrix);
-
-  let dijkstra = new Dijkstra();
-  let shortestPath = dijkstra.findShortestPath(
-    startPoint,
-    endPoint,
-    intputGrid,
-    getVisitedElement
-  );
-
-  /**
-   * Animation for visited cells
-   */
-  visited.forEach((node, index) => {
-    if (node.x == endPoint.x && node.y == endPoint.y) return;
-    if (node.x == startPoint.x && node.y == startPoint.y) return;
-    setTimeout(() => {
-      let element = grid.rows[node.x].cells[node.y];
-      element.style.backgroundColor = "lightblue";
-    }, index * timeout);
-    timeWaited++;
-  });
-
-  /**
-   * Draws shortest path
-   */
-  setTimeout(() => {
-    shortestPath.forEach(node => {
-      if (node.x == startPoint.x && node.y == startPoint.y) return;
-      if (node.x == endPoint.x && node.y == endPoint.y) return;
-      let element = grid.rows[node.x].cells[node.y];
-      element.style.backgroundColor = "sandybrown";
-    });
-  }, timeWaited * timeout);
-};
-
-},{"./dijkstra":4,"./grid":5}],4:[function(require,module,exports){
 var Heap = require("heap");
 
 /**
@@ -572,7 +390,7 @@ class Dijkstra {
   }
 
   /**
-   * Find and returns the shortest path.
+   * Find and returns the shortest path
    */
   findShortestPath = (start, end, grid, getVisitedElement) => {
     let startNode = grid.getNode(start.x, start.y);
@@ -619,7 +437,10 @@ class Dijkstra {
     return null; // if it cannot find any path, return empty list
   };
 
-  shortestPath = endNode => {
+  /**
+   * creates shortest path in right order (from start to end)
+   */
+  shortestPath = (endNode) => {
     let shortestPath = [{ x: endNode.x, y: endNode.y }];
     while (endNode.parent != null) {
       endNode = endNode.parent;
@@ -632,9 +453,10 @@ class Dijkstra {
 
 module.exports = Dijkstra;
 
-},{"heap":1}],5:[function(require,module,exports){
+},{"heap":1}],4:[function(require,module,exports){
 /**
  * The Grid class, encapsulates layout of nodes.
+ * Converts 2d matrix into adjacency graph
  */
 class Grid {
   constructor(input) {
@@ -647,7 +469,7 @@ class Grid {
   /**
    * Build and return the nodes.
    */
-  buildNodesFromMatrix = matrix => {
+  buildNodesFromMatrix = (matrix) => {
     let nodes = new Array(this.height);
 
     for (let i = 0; i < this.height; ++i) {
@@ -692,7 +514,7 @@ class Grid {
    * Gets neighbors of node
    * @todo: add diagonal movement
    */
-  getNeighbors = node => {
+  getNeighbors = (node) => {
     let x = node.x;
     let y = node.y;
     let neighbors = [];
@@ -726,4 +548,301 @@ function Node(x, y, walkable) {
 
 module.exports = Grid;
 
-},{}]},{},[3]);
+},{}],5:[function(require,module,exports){
+let Grid = require("./Grid");
+let Dijkstra = require("./Dijkstra");
+let { colors, events, htmlElement } = require("./Models");
+
+class Gui {
+  visited = new Array();
+  timeout = 1; // in ms
+  timeWaited = 0;
+  startPoint = {
+    x: undefined,
+    y: undefined,
+  };
+  endPoint = {
+    x: undefined,
+    y: undefined,
+  };
+  walls = [];
+  alreadyExecuted = false;
+
+  /**
+   * sets up Gui component
+   */
+  constructor() {
+    console.log("Gui component created");
+    this.matrix = this.createMatrix(24);
+  }
+
+  /**
+   * sets up grid html component
+   */
+  setGrid = (grid) => {
+    this.grid = grid;
+
+    window.addEventListener(events.load, () => {
+      let test = document.getElementsByClassName(htmlElement.grid);
+      let putHere = test.item(0);
+      putHere.appendChild(this.grid);
+      this.onClearButtonClicked();
+      this.onStartAlgorithmButtonClicked();
+    });
+  };
+
+  /**
+   * Adds visited element to list
+   * @param {number} row represents y coord
+   * @param {number} column represents x coord
+   */
+  getVisitedElement = (row, column) => {
+    this.visited.push({ x: row, y: column });
+  };
+
+  /**
+   * Sets color of element depending on type
+   * @param {number} x column value
+   * @param {number} y row value
+   * @param {boolean} isStart is element startpoint
+   * @param {boolean} isWall is element wall
+   */
+  setElement = (x, y, isStart, isWall) => {
+    let element = this.grid.rows[x].cells[y];
+    if (isWall) element.style.backgroundColor = colors.wall;
+    if (isStart) element.style.backgroundColor = colors.start;
+    if (!isStart && !isWall) element.style.backgroundColor = colors.end;
+  };
+
+  /**
+   * creates matrix representation of grid with row and columns
+   * @param {number} rows
+   */
+  createMatrix = (rows) => {
+    /**
+     * If walls are added, change matrix cell to 1
+     */
+    let matrix = new Array(rows);
+    for (let i = 0; i < rows; i++) {
+      matrix[i] = new Array(rows);
+      for (let j = 0; j < rows; j++) {
+        matrix[i][j] = 0;
+      }
+    }
+    return matrix;
+  };
+
+  /**
+   * sets startpoint
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  setStartPoint = (row, col) => {
+    this.startPoint = { x: col, y: row };
+    this.setElement(this.startPoint.x, this.startPoint.y, true);
+    console.log(`startpoint: (${this.startPoint.x}, ${this.startPoint.y})`);
+  };
+
+  /**
+   * sets endpoint
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  setEndPoint = (row, col) => {
+    this.endPoint = { x: col, y: row };
+    this.setElement(this.endPoint.x, this.endPoint.y, false);
+    console.log(`endpoint: (${this.endPoint.x}, ${this.endPoint.y})`);
+  };
+
+  /**
+   * sets wall
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  setWall = (row, col) => {
+    console.log(`Wall: (${col}, ${row})`);
+    this.walls.push({ x: col, y: row });
+    this.matrix[row][col] = 1;
+    this.setElement(col, row, false, true);
+  };
+
+  /**
+   * clears grid from all ui changes and resets saved start/endpoint and walls
+   */
+  clearGrid = () => {
+    console.log("Clearing grid");
+    this.startPoint = { x: undefined, y: undefined };
+    this.endPoint = { x: undefined, y: undefined };
+    this.walls = [];
+    this.visited = [];
+
+    for (let x = 0; x < this.matrix.length; x++) {
+      for (let y = 0; y < this.matrix[0].length; y++) {
+        this.grid.rows[x].cells[y].style.backgroundColor = colors.plain;
+      }
+    }
+    this.alreadyExecuted = false;
+    this.matrix = this.createMatrix(24);
+    this.timeWaited = 0;
+  };
+
+  /**
+   * starts algorithms and draws shotest path and visited cells
+   * @todo: modify this to add algorithm as parameter
+   */
+  startAlgorithm = () => {
+    console.log("Starting algorithm");
+
+    if (this.startPoint.x == null) {
+      alert("Cannot start algorithm, choose startpoint first");
+      return;
+    }
+    if (this.endPoint.x == null) {
+      alert("Cannot start algorithm, choose endpoint first");
+      return;
+    }
+
+    let intputGrid = new Grid(this.matrix);
+
+    let dijkstra = new Dijkstra();
+    let shortestPath = dijkstra.findShortestPath(
+      this.startPoint,
+      this.endPoint,
+      intputGrid,
+      this.getVisitedElement
+    );
+
+    /**
+     * Animation for visited cells
+     */
+    this.visited.forEach((node, index) => {
+      if (node.x == this.endPoint.x && node.y == this.endPoint.y) return;
+      if (node.x == this.startPoint.x && node.y == this.startPoint.y) return;
+      setTimeout(() => {
+        let element = this.grid.rows[node.x].cells[node.y];
+        element.style.backgroundColor = colors.visited;
+      }, index * this.timeout);
+      this.timeWaited++;
+    });
+
+    /**
+     * Draws shortest path
+     */
+    setTimeout(() => {
+      shortestPath.forEach((node) => {
+        if (node.x == this.startPoint.x && node.y == this.startPoint.y) return;
+        if (node.x == this.endPoint.x && node.y == this.endPoint.y) return;
+        let element = this.grid.rows[node.x].cells[node.y];
+        element.style.backgroundColor = colors.shortestPath;
+      });
+    }, this.timeWaited * this.timeout);
+
+    this.alreadyExecuted = true;
+  };
+
+  /**
+   * Executed once clear button is clicked
+   */
+  onClearButtonClicked = () => {
+    document
+      .getElementById(htmlElement.clearButton)
+      .addEventListener(events.click, () => {
+        console.log("Clear button clicked");
+        this.clearGrid();
+      });
+  };
+
+  /**
+   * Executed once start algorithm button is clicked
+   */
+  onStartAlgorithmButtonClicked = () => {
+    document
+      .getElementById(htmlElement.startAlgorithmButton)
+      .addEventListener(events.click, () => {
+        console.log("Start algorithm button clicked");
+        if (!this.alreadyExecuted) this.startAlgorithm();
+      });
+  };
+}
+
+module.exports = Gui;
+
+},{"./Dijkstra":3,"./Grid":4,"./Models":6}],6:[function(require,module,exports){
+/**
+ * defines all colors currenlty used
+ */
+const colors = {
+  start: "#82E0AA",
+  end: "#D98880",
+  visited: "#D6EAF8",
+  wall: "#757575",
+  shortestPath: "#FFEE58",
+  plain: "white",
+};
+
+/**
+ * defines all html methods used
+ */
+const htmlElement = {
+  grid: "col-md-9",
+  clearButton: "clearButton",
+  startAlgorithmButton: "startAlgorithmButton",
+  startPointButton: "chooseStartButton",
+  endPointButton: "chooseEndButton",
+};
+
+/**
+ * defines events used
+ */
+const events = {
+  click: "click",
+  load: "load",
+};
+
+module.exports = { colors, htmlElement, events };
+
+},{}],7:[function(require,module,exports){
+/**
+ * executes all needed classes and functions for running the logic of path-finder
+ */
+let Gui = require("./Gui");
+
+let gui = new Gui();
+
+let grid = createGrid(24, 24, function (el, row, col, i) {
+  el.className = "clicked";
+  if (gui.startPoint.x == undefined) {
+    gui.setStartPoint(col, row);
+  } else if (gui.endPoint.x == undefined) {
+    gui.setEndPoint(col, row);
+  } else {
+    gui.setWall(col, row);
+  }
+});
+
+function createGrid(rows, cols, callback) {
+  var i = 0;
+  var grid = document.createElement("table");
+  grid.className = "grid";
+  for (var r = 0; r < rows; ++r) {
+    var tr = grid.appendChild(document.createElement("tr"));
+    for (var c = 0; c < cols; ++c) {
+      var cell = tr.appendChild(document.createElement("td"));
+      cell.addEventListener(
+        "click",
+        (function (el, r, c, i) {
+          return function () {
+            callback(el, r, c, i);
+          };
+        })(cell, r, c, i),
+        false
+      );
+    }
+  }
+  return grid;
+}
+
+document.body.appendChild(grid);
+gui.setGrid(grid);
+
+},{"./Gui":5}]},{},[7]);
