@@ -1,5 +1,6 @@
 /**
  * The Grid class, encapsulates layout of nodes.
+ * Converts 2d matrix into adjacency graph
  */
 class Grid {
   constructor(input) {
@@ -12,7 +13,7 @@ class Grid {
   /**
    * Build and return the nodes.
    */
-  buildNodesFromMatrix = matrix => {
+  buildNodesFromMatrix = (matrix) => {
     let nodes = new Array(this.height);
 
     for (let i = 0; i < this.height; ++i) {
@@ -57,7 +58,7 @@ class Grid {
    * Gets neighbors of node
    * @todo: add diagonal movement
    */
-  getNeighbors = node => {
+  getNeighbors = (node) => {
     let x = node.x;
     let y = node.y;
     let neighbors = [];
