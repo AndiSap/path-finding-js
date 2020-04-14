@@ -38,5 +38,4 @@ function createGrid(rows, cols, callback) {
   return grid;
 }
 
-document.body.appendChild(grid);
 gui.setGrid(grid);
