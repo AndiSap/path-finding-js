@@ -551,7 +551,7 @@ module.exports = Grid;
 },{}],5:[function(require,module,exports){
 let Grid = require("./Grid");
 let Dijkstra = require("./Dijkstra");
-let { colors, events, htmlElement } = require("./Models");
+let { colors, events, htmlElement, cellTypes } = require("./Models");
 
 class Gui {
   visited = new Array();
@@ -567,6 +567,8 @@ class Gui {
   };
   walls = [];
   alreadyExecuted = false;
+  choosingStartPoint = false;
+  choosingEndPoint = false;
 
   /**
    * sets up Gui component
@@ -588,6 +590,8 @@ class Gui {
       putHere.appendChild(this.grid);
       this.onClearButtonClicked();
       this.onStartAlgorithmButtonClicked();
+      this.onChooseStartPointButtonClicked();
+      this.onChooseEndPointButtonClicked();
     });
   };
 
@@ -604,16 +608,16 @@ class Gui {
    * Sets color of element depending on type
    * @param {number} x column value
    * @param {number} y row value
-   * @param {boolean} isStart is element startpoint
-   * @param {boolean} isWall is element wall
+   * @param {cellType} type the element type (plain, start, end, or wall)
    */
-  setElement = (x, y, isStart, isWall) => {
+  setElement = (x, y, type) => {
     let element = this.grid.rows[x].cells[y];
-    if (isWall) element.style.backgroundColor = colors.wall;
-    if (isStart) element.style.backgroundColor = colors.start;
-    if (!isStart && !isWall) element.style.backgroundColor = colors.end;
+    if(type === cellTypes.plain) element.style.backgroundColor = colors.plain;
+    if (type === cellTypes.wall) element.style.backgroundColor = colors.wall;
+    if (type === cellTypes.start) element.style.backgroundColor = colors.start;
+    if (type === cellTypes.end) element.style.backgroundColor = colors.end;
   };
-
+  
   /**
    * creates matrix representation of grid with row and columns
    * @param {number} rows
@@ -638,8 +642,9 @@ class Gui {
    * @param {number} col represents x coord
    */
   setStartPoint = (row, col) => {
+    if(this.startPoint.x !== undefined) this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.plain);
     this.startPoint = { x: col, y: row };
-    this.setElement(this.startPoint.x, this.startPoint.y, true);
+    this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.start);
     console.log(`startpoint: (${this.startPoint.x}, ${this.startPoint.y})`);
   };
 
@@ -649,8 +654,9 @@ class Gui {
    * @param {number} col represents x coord
    */
   setEndPoint = (row, col) => {
+    if(this.endPoint.x !== undefined) this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.plain);
     this.endPoint = { x: col, y: row };
-    this.setElement(this.endPoint.x, this.endPoint.y, false);
+    this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.end);
     console.log(`endpoint: (${this.endPoint.x}, ${this.endPoint.y})`);
   };
 
@@ -663,7 +669,7 @@ class Gui {
     console.log(`Wall: (${col}, ${row})`);
     this.walls.push({ x: col, y: row });
     this.matrix[row][col] = 1;
-    this.setElement(col, row, false, true);
+    this.setElement(col, row, cellTypes.wall);
   };
 
   /**
@@ -763,6 +769,44 @@ class Gui {
         if (!this.alreadyExecuted) this.startAlgorithm();
       });
   };
+  
+  /**
+   * Executed once choose start point button is clicked
+   */
+  onChooseStartPointButtonClicked = () => {
+    document
+      .getElementById(htmlElement.startPointButton)
+      .addEventListener(events.click, () => {
+        console.log("Choose start point button clicked");
+        if(this.choosingStartPoint){
+          this.choosingStartPoint = false;
+        } else {
+          this.choosingStartPoint = true;
+          this.choosingEndPoint = false;
+        }
+        console.log("choosingStart: " + this.choosingStartPoint);
+        console.log("choosingEnd: " + this.choosingEndPoint);
+    });
+  };
+  
+  /**
+   * Executed once choose end point button is clicked
+   */
+  onChooseEndPointButtonClicked = () => {
+    document
+      .getElementById(htmlElement.endPointButton)
+      .addEventListener(events.click, () => {
+        console.log("Choose end point button clicked");
+        if(this.choosingEndPoint){
+          this.choosingEndPoint = false;
+        } else {
+          this.choosingEndPoint = true;
+          this.choosingStartPoint = false;
+        }
+        console.log("choosingStart: " + this.choosingStartPoint);
+        console.log("choosingEnd: " + this.choosingEndPoint);
+    });
+  };
 }
 
 module.exports = Gui;
@@ -777,7 +821,7 @@ const colors = {
   visited: "#D6EAF8",
   wall: "#757575",
   shortestPath: "#FFEE58",
-  plain: "white",
+  plain: "white"
 };
 
 /**
@@ -788,7 +832,18 @@ const htmlElement = {
   clearButton: "clearButton",
   startAlgorithmButton: "startAlgorithmButton",
   startPointButton: "chooseStartButton",
-  endPointButton: "chooseEndButton",
+  endPointButton: "chooseEndButton"
+};
+
+/**
+ * defines all possible cell types
+ */
+const cellTypes = {
+    plain: "plain",
+    start: "start",
+    end: "end",
+    wall: "wall"
+    //TODO: Weighted cell
 };
 
 /**
@@ -796,10 +851,10 @@ const htmlElement = {
  */
 const events = {
   click: "click",
-  load: "load",
+  load: "load"
 };
 
-module.exports = { colors, htmlElement, events };
+module.exports = { colors, htmlElement, cellTypes, events };
 
 },{}],7:[function(require,module,exports){
 /**
@@ -811,9 +866,9 @@ let gui = new Gui();
 
 let grid = createGrid(24, 24, function (el, row, col, i) {
   el.className = "clicked";
-  if (gui.startPoint.x == undefined) {
+  if(gui.choosingStartPoint){
     gui.setStartPoint(col, row);
-  } else if (gui.endPoint.x == undefined) {
+  } else if(gui.choosingEndPoint) {
     gui.setEndPoint(col, row);
   } else {
     gui.setWall(col, row);
@@ -842,7 +897,6 @@ function createGrid(rows, cols, callback) {
   return grid;
 }
 
-document.body.appendChild(grid);
 gui.setGrid(grid);
 
 },{"./Gui":5}]},{},[7]);

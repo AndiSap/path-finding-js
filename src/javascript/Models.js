@@ -7,7 +7,7 @@ const colors = {
   visited: "#D6EAF8",
   wall: "#757575",
   shortestPath: "#FFEE58",
-  plain: "white",
+  plain: "white"
 };
 
 /**
@@ -18,7 +18,18 @@ const htmlElement = {
   clearButton: "clearButton",
   startAlgorithmButton: "startAlgorithmButton",
   startPointButton: "chooseStartButton",
-  endPointButton: "chooseEndButton",
+  endPointButton: "chooseEndButton"
+};
+
+/**
+ * defines all possible cell types
+ */
+const cellTypes = {
+    plain: "plain",
+    start: "start",
+    end: "end",
+    wall: "wall"
+    //TODO: Weighted cell
 };
 
 /**
@@ -26,7 +37,7 @@ const htmlElement = {
  */
 const events = {
   click: "click",
-  load: "load",
+  load: "load"
 };
 
-module.exports = { colors, htmlElement, events };
+module.exports = { colors, htmlElement, cellTypes, events };
