@@ -14,13 +14,6 @@ let grid = createGrid(24, 24, function (el, row, col, i) {
   } else {
     gui.setWall(col, row);
   }
-  /*if (gui.startPoint.x == undefined) {
-    gui.setStartPoint(col, row);
-  } else if (gui.endPoint.x == undefined) {
-    gui.setEndPoint(col, row);
-  } else {
-    gui.setWall(col, row);
-  }*/
 });
 
 function createGrid(rows, cols, callback) {

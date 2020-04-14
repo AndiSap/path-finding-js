@@ -612,10 +612,10 @@ class Gui {
    */
   setElement = (x, y, type) => {
     let element = this.grid.rows[x].cells[y];
-    if(type === "plain") element.style.backgroundColor = colors.plain;
-    if (type === "wall") element.style.backgroundColor = colors.wall;
-    if (type === "start") element.style.backgroundColor = colors.start;
-    if (type === "end") element.style.backgroundColor = colors.end;
+    if(type === cellTypes.plain) element.style.backgroundColor = colors.plain;
+    if (type === cellTypes.wall) element.style.backgroundColor = colors.wall;
+    if (type === cellTypes.start) element.style.backgroundColor = colors.start;
+    if (type === cellTypes.end) element.style.backgroundColor = colors.end;
   };
   
   /**
@@ -642,7 +642,7 @@ class Gui {
    * @param {number} col represents x coord
    */
   setStartPoint = (row, col) => {
-    if(!(this.startPoint.x === undefined)) this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.plain);
+    if(this.startPoint.x !== undefined) this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.plain);
     this.startPoint = { x: col, y: row };
     this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.start);
     console.log(`startpoint: (${this.startPoint.x}, ${this.startPoint.y})`);
@@ -654,7 +654,7 @@ class Gui {
    * @param {number} col represents x coord
    */
   setEndPoint = (row, col) => {
-    if(!(this.endPoint.x === undefined)) this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.plain);
+    if(this.endPoint.x !== undefined) this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.plain);
     this.endPoint = { x: col, y: row };
     this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.end);
     console.log(`endpoint: (${this.endPoint.x}, ${this.endPoint.y})`);
@@ -873,13 +873,6 @@ let grid = createGrid(24, 24, function (el, row, col, i) {
   } else {
     gui.setWall(col, row);
   }
-  /*if (gui.startPoint.x == undefined) {
-    gui.setStartPoint(col, row);
-  } else if (gui.endPoint.x == undefined) {
-    gui.setEndPoint(col, row);
-  } else {
-    gui.setWall(col, row);
-  }*/
 });
 
 function createGrid(rows, cols, callback) {
