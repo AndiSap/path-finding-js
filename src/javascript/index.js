@@ -7,13 +7,20 @@ let gui = new Gui();
 
 let grid = createGrid(24, 24, function (el, row, col, i) {
   el.className = "clicked";
-  if (gui.startPoint.x == undefined) {
+  if(gui.choosingStartPoint){
+    gui.setStartPoint(col, row);
+  } else if(gui.choosingEndPoint) {
+    gui.setEndPoint(col, row);
+  } else {
+    gui.setWall(col, row);
+  }
+  /*if (gui.startPoint.x == undefined) {
     gui.setStartPoint(col, row);
   } else if (gui.endPoint.x == undefined) {
     gui.setEndPoint(col, row);
   } else {
     gui.setWall(col, row);
-  }
+  }*/
 });
 
 function createGrid(rows, cols, callback) {
@@ -38,5 +45,4 @@ function createGrid(rows, cols, callback) {
   return grid;
 }
 
-document.body.appendChild(grid);
 gui.setGrid(grid);
