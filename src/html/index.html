@@ -17,7 +17,7 @@
     />
 
     <link rel="stylesheet" href="css/mainStyle.css" />
-    <link rel="stylesheet" href="src/css/gridStyle.css" />
+    <link rel="stylesheet" href="/src/css/gridStyle.css" />
 
     <title>Pathfinder | Visualization</title>
 
@@ -28,7 +28,7 @@
   </head>
 
   <body>
-    <script src="src/bundled/bundle.js"></script>
+    <script src="/src/bundled/bundle.js"></script>
 
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-sm-3 col-md-3 mr-0" href="#"
@@ -75,6 +75,22 @@
               <li class="nav-item draggable">
                 <i class="nav-link fas fa-bullseye" draggable="true"></i>
               </li>
+              <li class="nav-item">
+                <a id="setWallsButton" class="nav-link" href="#"
+                  >Set Walls</a
+                >
+              </li>
+              <li class="nav-item draggable">
+                <i class="nav-link fas fa-stop" draggable="true"></i>
+              </li>
+              <li class="nav-item">
+                <a id="eraserButton" class="nav-link" href="#"
+                  >Delete Walls</a
+                >
+              </li>
+              <li class="nav-item draggable">
+                <i class="nav-link fas fa-eraser" draggable="true"></i>
+              </li>
             </ul>
             <br />
             <br />
@@ -85,15 +101,28 @@
                   type="radio"
                   id="dijkstra"
                   name="algorithm-select"
+                  value="dijkstra"
                   checked
                 />
                 <label for="dijsktra">Dijkstra's Algorithm</label>
               </li>
               <li>
-                <input type="radio" id="other" name="algorithm-select" />
+                <input type="radio" id="other" name="algorithm-select" value="other"/>
                 <label for="dijsktra">Other</label>
               </li>
             </ul>
+            <h5>Show Algorithm process?</h5>
+            <ul class="nav flex-column">
+              <li>
+                <input
+                  type="radio" id="yes" name="show-algorithm" value="yes" checked />
+                  <label for="dijsktra">Yes</label>
+              </li>
+              <li>
+                <input type="radio" id="no" name="show-algorithm" value="no"/>
+                <label for="dijsktra">No</label>
+              </li>
+        
           </div>
         </nav>
         <!-- Grid goes in this div -->
