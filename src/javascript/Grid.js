@@ -1,12 +1,13 @@
 /**
+ *
+ * Grid class based on: https://github.com/bgrins/javascript-astar
+ * Reused components and made modifications/adaptations to suite our use case.
+ *
  * The Grid class, encapsulates layout of nodes.
  * Converts 2d matrix into adjacency graph
  */
 class Grid {
   constructor(input) {
-    this.height = input.length;
-    this.width = input[0].length;
-
     this.nodes = this.buildNodesFromMatrix(input);
   }
 
@@ -14,10 +15,12 @@ class Grid {
    * Build and return the nodes.
    */
   buildNodesFromMatrix = (matrix) => {
-    let nodes = new Array(this.height);
+    this.height = matrix.length;
+    this.width = matrix[0].length;
+    let nodes = [];
 
     for (let i = 0; i < this.height; ++i) {
-      nodes[i] = new Array(this.width);
+      nodes[i] = [];
       for (let j = 0; j < this.width; ++j) {
         nodes[i][j] = new Node(j, i);
       }
@@ -25,7 +28,7 @@ class Grid {
 
     for (let i = 0; i < this.height; ++i) {
       for (let j = 0; j < this.width; ++j) {
-        if (matrix[i][j]) nodes[i][j].walkable = false; // everything != (0 || false) will be blocked
+        if (matrix[i][j] === 1) nodes[i][j].walkable = false;
       }
     }
     return nodes;
@@ -39,9 +42,23 @@ class Grid {
   };
 
   /**
+   * Sets weight of given node
+   */
+  setWeight = (x, y, weight) => {
+    this.nodes[y][x].weight = weight;
+  };
+
+  /**
+   * Gets weight given of node
+   */
+  getWeight = (x, y) => {
+    return this.nodes[y][x].weight;
+  };
+
+  /**
    * Returns true if position is inside of the grid and walkable
    */
-  walkable = (x, y) => {
+  reachable = (x, y) => {
     return this.insideGrid(x, y) && this.nodes[y][x].walkable;
   };
 
@@ -66,28 +83,35 @@ class Grid {
 
     // top
     let top = y - 1;
-    if (this.walkable(x, top)) neighbors.push(nodesList[top][x]);
+    if (this.reachable(x, top)) neighbors.push(nodesList[top][x]);
 
     // right
     let right = x + 1;
-    if (this.walkable(right, y)) neighbors.push(nodesList[y][right]);
+    if (this.reachable(right, y)) neighbors.push(nodesList[y][right]);
 
     // bottom
     let bottom = y + 1;
-    if (this.walkable(x, bottom)) neighbors.push(nodesList[bottom][x]);
+    if (this.reachable(x, bottom)) neighbors.push(nodesList[bottom][x]);
 
     // left
     let left = x - 1;
-    if (this.walkable(left, y)) neighbors.push(nodesList[y][left]);
+    if (this.reachable(left, y)) neighbors.push(nodesList[y][left]);
 
     return neighbors;
   };
 }
 
-function Node(x, y, walkable) {
-  this.x = x;
-  this.y = y;
-  this.walkable = walkable === undefined ? true : walkable;
+/**
+ * Creates a node based on its coordinates.
+ * Default: walkable = true & weight = 1
+ */
+class Node {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.walkable = true;
+    this.weight = 1;
+  }
 }
 
 module.exports = Grid;

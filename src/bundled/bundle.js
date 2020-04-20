@@ -379,14 +379,44 @@ module.exports = require('./lib/heap');
 }).call(this);
 
 },{}],3:[function(require,module,exports){
+let Algorithm = require("./Algorithm");
+
+/**
+ * A* algorithm extending Algorithms class
+ */
+class AStar extends Algorithm {
+  /**
+   * heuristic returns shortest distance either row or column wise CHANGE THIS
+   * @param {number} row x distance
+   * @param {number} column y distance
+   */
+  heuristic(currentNode, endNode) {
+    let xDiff = Math.abs(currentNode.x - endNode.x);
+    let yDiff = Math.abs(currentNode.y - endNode.y);
+    return xDiff + yDiff;
+  }
+}
+
+module.exports = AStar;
+
+},{"./Algorithm":4}],4:[function(require,module,exports){
 var Heap = require("heap");
 
 /**
- * Dijkstra algorithm based on:  https://github.com/bgrins/javascript-astar
+ * Algorithm class based on: https://github.com/bgrins/javascript-astar
+ * Reused components and made modifications/adaptations to suite our use case.
  */
-class Dijkstra {
-  constructor(weight) {
-    this.weight = weight == null ? 1 : weight;
+class Algorithm {
+  /**
+   * Javascript by default doesn't have abstract classes.
+   * Heuristic-method must be implemented when extending this class.
+   * If not, it will throw an error (clean way -> use TypeScript instead of JavaScript)
+   */
+  constructor() {
+    if (this.heuristic === undefined)
+      throw new Error(
+        "Cannot extend Algorithms class, must implement heuristic method"
+      );
   }
 
   /**
@@ -405,7 +435,6 @@ class Dijkstra {
     startNode.opened = true;
 
     while (!nodeList.empty()) {
-      // console.log(nodeList.peek());
       node = nodeList.pop(); // gets next node
       node.closed = true;
 
@@ -418,11 +447,12 @@ class Dijkstra {
         if (neighbor.closed) continue;
 
         // get the distance between current node and the neighbor and calculate the next g score
-        let nextGCost = node.gCost + 1; // only top/bottom/left/right movement
+        let nextGCost = (node.gCost + 1) * neighbor.weight; // only top/bottom/left/right movement
 
         // Check if neighbor was not visited yet and has smaller cost
         if (!neighbor.opened || nextGCost < neighbor.gCost) {
-          neighbor.hCost = this.weight;
+          neighbor.hCost = neighbor.hCost || this.heuristic(neighbor, endNode);
+
           neighbor.gCost = nextGCost;
           neighbor.fCost = neighbor.gCost + neighbor.hCost;
           neighbor.parent = node;
@@ -451,18 +481,37 @@ class Dijkstra {
   };
 }
 
+module.exports = Algorithm;
+
+},{"heap":1}],5:[function(require,module,exports){
+let Algorithm = require("./Algorithm");
+
+/**
+ * Dijkstra algorithm extending Algorithms class
+ */
+class Dijkstra extends Algorithm {
+  /**
+   * heuristic returns 1 since Dijkstra's algorithm doesn't take
+   * x/y difference into account
+   */
+  heuristic() {
+    return 0;
+  }
+}
+
 module.exports = Dijkstra;
 
-},{"heap":1}],4:[function(require,module,exports){
+},{"./Algorithm":4}],6:[function(require,module,exports){
 /**
+ *
+ * Grid class based on: https://github.com/bgrins/javascript-astar
+ * Reused components and made modifications/adaptations to suite our use case.
+ *
  * The Grid class, encapsulates layout of nodes.
  * Converts 2d matrix into adjacency graph
  */
 class Grid {
   constructor(input) {
-    this.height = input.length;
-    this.width = input[0].length;
-
     this.nodes = this.buildNodesFromMatrix(input);
   }
 
@@ -470,10 +519,12 @@ class Grid {
    * Build and return the nodes.
    */
   buildNodesFromMatrix = (matrix) => {
-    let nodes = new Array(this.height);
+    this.height = matrix.length;
+    this.width = matrix[0].length;
+    let nodes = [];
 
     for (let i = 0; i < this.height; ++i) {
-      nodes[i] = new Array(this.width);
+      nodes[i] = [];
       for (let j = 0; j < this.width; ++j) {
         nodes[i][j] = new Node(j, i);
       }
@@ -481,7 +532,7 @@ class Grid {
 
     for (let i = 0; i < this.height; ++i) {
       for (let j = 0; j < this.width; ++j) {
-        if (matrix[i][j]) nodes[i][j].walkable = false; // everything != (0 || false) will be blocked
+        if (matrix[i][j] === 1) nodes[i][j].walkable = false;
       }
     }
     return nodes;
@@ -495,9 +546,23 @@ class Grid {
   };
 
   /**
+   * Sets weight of given node
+   */
+  setWeight = (x, y, weight) => {
+    this.nodes[y][x].weight = weight;
+  };
+
+  /**
+   * Gets weight given of node
+   */
+  getWeight = (x, y) => {
+    return this.nodes[y][x].weight;
+  };
+
+  /**
    * Returns true if position is inside of the grid and walkable
    */
-  walkable = (x, y) => {
+  reachable = (x, y) => {
     return this.insideGrid(x, y) && this.nodes[y][x].walkable;
   };
 
@@ -522,40 +587,56 @@ class Grid {
 
     // top
     let top = y - 1;
-    if (this.walkable(x, top)) neighbors.push(nodesList[top][x]);
+    if (this.reachable(x, top)) neighbors.push(nodesList[top][x]);
 
     // right
     let right = x + 1;
-    if (this.walkable(right, y)) neighbors.push(nodesList[y][right]);
+    if (this.reachable(right, y)) neighbors.push(nodesList[y][right]);
 
     // bottom
     let bottom = y + 1;
-    if (this.walkable(x, bottom)) neighbors.push(nodesList[bottom][x]);
+    if (this.reachable(x, bottom)) neighbors.push(nodesList[bottom][x]);
 
     // left
     let left = x - 1;
-    if (this.walkable(left, y)) neighbors.push(nodesList[y][left]);
+    if (this.reachable(left, y)) neighbors.push(nodesList[y][left]);
 
     return neighbors;
   };
 }
 
-function Node(x, y, walkable) {
-  this.x = x;
-  this.y = y;
-  this.walkable = walkable === undefined ? true : walkable;
+/**
+ * Creates a node based on its coordinates.
+ * Default: walkable = true & weight = 1
+ */
+class Node {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.walkable = true;
+    this.weight = 1;
+  }
 }
 
 module.exports = Grid;
 
-},{}],5:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 let Grid = require("./Grid");
 let Dijkstra = require("./Dijkstra");
-let { colors, events, htmlElement, cellTypes } = require("./Models");
+let AStar = require("./AStar");
+let {
+  colors,
+  events,
+  htmlElement,
+  timeouts,
+  obstacleWeights,
+  cellTypes,
+} = require("./Models");
 
 class Gui {
   visited = new Array();
-  timeout = 1; // in ms
+  weights = new Array();
+  timeout = timeouts.default;
   timeWaited = 0;
   startPoint = {
     x: undefined,
@@ -569,6 +650,10 @@ class Gui {
   alreadyExecuted = false;
   choosingStartPoint = false;
   choosingEndPoint = false;
+  dijkstra = new Dijkstra();
+  astar = new AStar();
+  weightsActive = false;
+  currentWeight = "none";
 
   /**
    * sets up Gui component
@@ -576,6 +661,7 @@ class Gui {
   constructor() {
     console.log("Gui component created");
     this.matrix = this.createMatrix(24);
+    this.algorithm = this.dijkstra;
   }
 
   /**
@@ -592,6 +678,11 @@ class Gui {
       this.onStartAlgorithmButtonClicked();
       this.onChooseStartPointButtonClicked();
       this.onChooseEndPointButtonClicked();
+      this.onAstartClicked();
+      this.onDijkstraClicked();
+      this.onOtherClicked();
+      this.onSlowMotion();
+      this.onSetWeights();
     });
   };
 
@@ -608,16 +699,36 @@ class Gui {
    * Sets color of element depending on type
    * @param {number} x column value
    * @param {number} y row value
-   * @param {cellType} type the element type (plain, start, end, or wall)
+   * @param {cellType} type the element type (plain, start, end, wall or obstacle)
    */
   setElement = (x, y, type) => {
     let element = this.grid.rows[x].cells[y];
-    if(type === cellTypes.plain) element.style.backgroundColor = colors.plain;
-    if (type === cellTypes.wall) element.style.backgroundColor = colors.wall;
-    if (type === cellTypes.start) element.style.backgroundColor = colors.start;
-    if (type === cellTypes.end) element.style.backgroundColor = colors.end;
+
+    switch (type) {
+      case cellTypes.plain:
+        element.style.backgroundColor = colors.plain;
+        break;
+      case cellTypes.wall:
+        element.style.backgroundColor = colors.wall;
+        break;
+      case cellTypes.start:
+        element.style.backgroundColor = colors.start;
+        break;
+      case cellTypes.end:
+        element.style.backgroundColor = colors.end;
+        break;
+      case cellTypes.obstacleLight:
+        element.style.backgroundColor = colors.obstacleLight;
+        break;
+      case cellTypes.obstacleMedium:
+        element.style.backgroundColor = colors.obstacleMedium;
+        break;
+      case cellTypes.obstacleHeavy:
+        element.style.backgroundColor = colors.obstacleHeavy;
+        break;
+    }
   };
-  
+
   /**
    * creates matrix representation of grid with row and columns
    * @param {number} rows
@@ -642,7 +753,8 @@ class Gui {
    * @param {number} col represents x coord
    */
   setStartPoint = (row, col) => {
-    if(this.startPoint.x !== undefined) this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.plain);
+    if (this.startPoint.x !== undefined)
+      this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.plain);
     this.startPoint = { x: col, y: row };
     this.setElement(this.startPoint.x, this.startPoint.y, cellTypes.start);
     console.log(`startpoint: (${this.startPoint.x}, ${this.startPoint.y})`);
@@ -654,10 +766,21 @@ class Gui {
    * @param {number} col represents x coord
    */
   setEndPoint = (row, col) => {
-    if(this.endPoint.x !== undefined) this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.plain);
+    if (this.endPoint.x !== undefined)
+      this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.plain);
     this.endPoint = { x: col, y: row };
     this.setElement(this.endPoint.x, this.endPoint.y, cellTypes.end);
     console.log(`endpoint: (${this.endPoint.x}, ${this.endPoint.y})`);
+  };
+
+  /**
+   * sets obstacle (either wall or weights depending on user input)
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  setObstacle = (row, col) => {
+    if (this.weightsActive == false) this.setWall(row, col);
+    else this.setWeight(row, col);
   };
 
   /**
@@ -670,6 +793,21 @@ class Gui {
     this.walls.push({ x: col, y: row });
     this.matrix[row][col] = 1;
     this.setElement(col, row, cellTypes.wall);
+  };
+
+  /**
+   * Sets weight
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  setWeight = (row, col) => {
+    console.log(`Weight: (${col}, ${row}): ${this.currentWeight}`);
+    this.weights.push({
+      x: col,
+      y: row,
+      weight: obstacleWeights[this.currentWeight],
+    });
+    this.setElement(col, row, this.currentWeight);
   };
 
   /**
@@ -690,13 +828,27 @@ class Gui {
     this.alreadyExecuted = false;
     this.matrix = this.createMatrix(24);
     this.timeWaited = 0;
+    this.currentWeight = "";
+    this.weights = [];
+    this.weightsActive = false;
+    this.resetWeightsUi();
+  };
+
+  /**
+   * Resets obstacle selection on clearGrid to default to wall
+   */
+  resetWeightsUi = () => {
+    document.getElementById(htmlElement.obstacleWall).checked = true;
+    document.getElementById(htmlElement.obstacleLight).checked = false;
+    document.getElementById(htmlElement.obstacleMedium).checked = false;
+    document.getElementById(htmlElement.obstacleHeavy).checked = false;
   };
 
   /**
    * starts algorithms and draws shotest path and visited cells
-   * @todo: modify this to add algorithm as parameter
+   * @param {algorithm} algorithm which should be used for finding the shortest path
    */
-  startAlgorithm = () => {
+  startAlgorithm = (algorithm) => {
     console.log("Starting algorithm");
 
     if (this.startPoint.x == null) {
@@ -710,8 +862,11 @@ class Gui {
 
     let intputGrid = new Grid(this.matrix);
 
-    let dijkstra = new Dijkstra();
-    let shortestPath = dijkstra.findShortestPath(
+    this.weights.forEach((data) => {
+      intputGrid.setWeight(data.x, data.y, data.weight);
+    });
+
+    let shortestPath = algorithm.findShortestPath(
       this.startPoint,
       this.endPoint,
       intputGrid,
@@ -722,6 +877,12 @@ class Gui {
      * Animation for visited cells
      */
     this.visited.forEach((node, index) => {
+      let weight = false;
+      this.weights.forEach((data) => {
+        if (node.x == data.x && node.y == data.y) weight = true;
+      });
+      if (weight) return;
+
       if (node.x == this.endPoint.x && node.y == this.endPoint.y) return;
       if (node.x == this.startPoint.x && node.y == this.startPoint.y) return;
       setTimeout(() => {
@@ -766,10 +927,10 @@ class Gui {
       .getElementById(htmlElement.startAlgorithmButton)
       .addEventListener(events.click, () => {
         console.log("Start algorithm button clicked");
-        if (!this.alreadyExecuted) this.startAlgorithm();
+        if (!this.alreadyExecuted) this.startAlgorithm(this.algorithm);
       });
   };
-  
+
   /**
    * Executed once choose start point button is clicked
    */
@@ -778,7 +939,7 @@ class Gui {
       .getElementById(htmlElement.startPointButton)
       .addEventListener(events.click, () => {
         console.log("Choose start point button clicked");
-        if(this.choosingStartPoint){
+        if (this.choosingStartPoint) {
           this.choosingStartPoint = false;
         } else {
           this.choosingStartPoint = true;
@@ -786,9 +947,9 @@ class Gui {
         }
         console.log("choosingStart: " + this.choosingStartPoint);
         console.log("choosingEnd: " + this.choosingEndPoint);
-    });
+      });
   };
-  
+
   /**
    * Executed once choose end point button is clicked
    */
@@ -797,7 +958,7 @@ class Gui {
       .getElementById(htmlElement.endPointButton)
       .addEventListener(events.click, () => {
         console.log("Choose end point button clicked");
-        if(this.choosingEndPoint){
+        if (this.choosingEndPoint) {
           this.choosingEndPoint = false;
         } else {
           this.choosingEndPoint = true;
@@ -805,13 +966,100 @@ class Gui {
         }
         console.log("choosingStart: " + this.choosingStartPoint);
         console.log("choosingEnd: " + this.choosingEndPoint);
-    });
+      });
+  };
+
+  /**
+   * Executed once A* Algorithm button is clicked
+   */
+  onAstartClicked = () => {
+    document
+      .getElementById(htmlElement.astar)
+      .addEventListener(events.click, () => {
+        console.log("Setting algorithm to AStart");
+        this.algorithm = this.astar;
+      });
+  };
+
+  /**
+   * Executed once Dijkstra Algorithm button is clicked
+   */
+  onDijkstraClicked = () => {
+    document
+      .getElementById(htmlElement.dijkstra)
+      .addEventListener(events.click, () => {
+        console.log("Setting algorithm to Dijkstra");
+        this.algorithm = this.dijkstra;
+      });
+  };
+
+  /**
+   * Executed once "other" button is clicked
+   */
+  onOtherClicked = () => {
+    document
+      .getElementById(htmlElement.other)
+      .addEventListener(events.click, () => {
+        alert("More algorithms comming soon!");
+        if (this.algorithm == this.dijkstra)
+          document.getElementById(htmlElement.dijkstra).checked = true;
+        else document.getElementById(htmlElement.astar).checked = true;
+      });
+  };
+
+  /**
+   * Executed once one of the slow motion selection is clicked
+   */
+  onSlowMotion = () => {
+    document
+      .getElementById(htmlElement.slowMotionNormal)
+      .addEventListener(events.click, () => (this.timeout = timeouts.default));
+    document
+      .getElementById(htmlElement.slowMotionSlow)
+      .addEventListener(events.click, () => (this.timeout = timeouts.slow));
+    document
+      .getElementById(htmlElement.slowMotionVerySlow)
+      .addEventListener(events.click, () => (this.timeout = timeouts.verySlow));
+  };
+
+  /**
+   * Executed once one of the weights selection is clicked
+   */
+  onSetWeights = () => {
+    document
+      .getElementById(htmlElement.obstacleWall)
+      .addEventListener(events.click, () => {
+        this.weightsActive = false;
+        console.log(`Setting obstacle to: ${cellTypes.wall}`);
+        this.currentWeight = cellTypes.wall;
+      });
+    document
+      .getElementById(htmlElement.obstacleLight)
+      .addEventListener(events.click, () => {
+        this.weightsActive = true;
+        console.log(`Setting obstacle to: ${cellTypes.obstacleLight}`);
+        this.currentWeight = cellTypes.obstacleLight;
+      });
+    document
+      .getElementById(htmlElement.obstacleMedium)
+      .addEventListener(events.click, () => {
+        this.weightsActive = true;
+        console.log(`Setting obstacle to: ${cellTypes.obstacleMedium}`);
+        this.currentWeight = cellTypes.obstacleMedium;
+      });
+    document
+      .getElementById(htmlElement.obstacleHeavy)
+      .addEventListener(events.click, () => {
+        this.weightsActive = true;
+        console.log(`Setting obstacle to: ${cellTypes.obstacleHeavy}`);
+        this.currentWeight = cellTypes.obstacleHeavy;
+      });
   };
 }
 
 module.exports = Gui;
 
-},{"./Dijkstra":3,"./Grid":4,"./Models":6}],6:[function(require,module,exports){
+},{"./AStar":3,"./Dijkstra":5,"./Grid":6,"./Models":8}],8:[function(require,module,exports){
 /**
  * defines all colors currenlty used
  */
@@ -819,9 +1067,12 @@ const colors = {
   start: "#82E0AA",
   end: "#D98880",
   visited: "#D6EAF8",
-  wall: "#757575",
+  wall: "black",
   shortestPath: "#FFEE58",
-  plain: "white"
+  plain: "white",
+  obstacleLight: "#DCDCDC",
+  obstacleMedium: "#C0C0C0",
+  obstacleHeavy: "#696969",
 };
 
 /**
@@ -832,18 +1083,40 @@ const htmlElement = {
   clearButton: "clearButton",
   startAlgorithmButton: "startAlgorithmButton",
   startPointButton: "chooseStartButton",
-  endPointButton: "chooseEndButton"
+  endPointButton: "chooseEndButton",
+  dijkstra: "dijkstra",
+  astar: "astart",
+  other: "other",
+  slowMotionNormal: "normal",
+  slowMotionSlow: "twice",
+  slowMotionVerySlow: "triple",
+  obstacleWall: "one",
+  obstacleLight: "two",
+  obstacleMedium: "three",
+  obstacleHeavy: "four",
 };
 
 /**
  * defines all possible cell types
  */
 const cellTypes = {
-    plain: "plain",
-    start: "start",
-    end: "end",
-    wall: "wall"
-    //TODO: Weighted cell
+  plain: "plain",
+  start: "start",
+  end: "end",
+  wall: "wall",
+  obstacleLight: "light",
+  obstacleMedium: "medium",
+  obstacleHeavy: "heavy",
+};
+
+/**
+ * defines weight of obstacles
+ */
+const obstacleWeights = {
+  wall: 1,
+  light: 2,
+  medium: 3,
+  heavy: 4,
 };
 
 /**
@@ -851,12 +1124,28 @@ const cellTypes = {
  */
 const events = {
   click: "click",
-  load: "load"
+  load: "load",
 };
 
-module.exports = { colors, htmlElement, cellTypes, events };
+/**
+ * defines timeouts in ms for slow motion
+ */
+const timeouts = {
+  default: 0.5,
+  slow: 5,
+  verySlow: 15,
+};
 
-},{}],7:[function(require,module,exports){
+module.exports = {
+  colors,
+  htmlElement,
+  events,
+  timeouts,
+  obstacleWeights,
+  cellTypes,
+};
+
+},{}],9:[function(require,module,exports){
 /**
  * executes all needed classes and functions for running the logic of path-finder
  */
@@ -866,12 +1155,12 @@ let gui = new Gui();
 
 let grid = createGrid(24, 24, function (el, row, col, i) {
   el.className = "clicked";
-  if(gui.choosingStartPoint){
+  if (gui.choosingStartPoint) {
     gui.setStartPoint(col, row);
-  } else if(gui.choosingEndPoint) {
+  } else if (gui.choosingEndPoint) {
     gui.setEndPoint(col, row);
   } else {
-    gui.setWall(col, row);
+    gui.setObstacle(col, row);
   }
 });
 
@@ -899,4 +1188,4 @@ function createGrid(rows, cols, callback) {
 
 gui.setGrid(grid);
 
-},{"./Gui":5}]},{},[7]);
+},{"./Gui":7}]},{},[9]);

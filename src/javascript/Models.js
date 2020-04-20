@@ -5,9 +5,12 @@ const colors = {
   start: "#82E0AA",
   end: "#D98880",
   visited: "#D6EAF8",
-  wall: "#757575",
+  wall: "black",
   shortestPath: "#FFEE58",
-  plain: "white"
+  plain: "white",
+  obstacleLight: "#DCDCDC",
+  obstacleMedium: "#C0C0C0",
+  obstacleHeavy: "#696969"
 };
 
 /**
@@ -18,18 +21,40 @@ const htmlElement = {
   clearButton: "clearButton",
   startAlgorithmButton: "startAlgorithmButton",
   startPointButton: "chooseStartButton",
-  endPointButton: "chooseEndButton"
+  endPointButton: "chooseEndButton",
+  dijkstra: "dijkstra",
+  astar: "astart",
+  other: "other",
+  slowMotionNormal: "normal",
+  slowMotionSlow: "twice",
+  slowMotionVerySlow: "triple",
+  obstacleWall: "one",
+  obstacleLight: "two",
+  obstacleMedium: "three",
+  obstacleHeavy: "four"
 };
 
 /**
  * defines all possible cell types
  */
 const cellTypes = {
-    plain: "plain",
-    start: "start",
-    end: "end",
-    wall: "wall"
-    //TODO: Weighted cell
+  plain: "plain",
+  start: "start",
+  end: "end",
+  wall: "wall",
+  obstacleLight: "light",
+  obstacleMedium: "medium",
+  obstacleHeavy: "heavy"
+};
+
+/**
+ * defines weight of obstacles
+ */
+const obstacleWeights = {
+  wall: 1,
+  light: 2,
+  medium: 3,
+  heavy: 4
 };
 
 /**
@@ -40,4 +65,20 @@ const events = {
   load: "load"
 };
 
-module.exports = { colors, htmlElement, cellTypes, events };
+/**
+ * defines timeouts in ms for slow motion
+ */
+const timeouts = {
+  default: 0.5,
+  slow: 5,
+  verySlow: 15
+};
+
+module.exports = {
+  colors,
+  htmlElement,
+  events,
+  timeouts,
+  obstacleWeights,
+  cellTypes
+};

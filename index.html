@@ -97,7 +97,6 @@
                   type="radio"
                   id="dijkstra"
                   name="algorithm-select"
-                  value="dijkstra"
                   checked
                 />
                 <label for="dijsktra">Dijkstra's Algorithm</label>
@@ -105,11 +104,71 @@
               <li>
                 <input
                   type="radio"
-                  id="other"
+                  id="astart"
                   name="algorithm-select"
-                  value="other"
+                  unchecked
                 />
+                <label for="astart">A* Algorithm</label>
+              </li>
+              <li>
+                <input id="other" type="radio" name="algorithm-select" />
                 <label for="dijsktra">Other</label>
+              </li>
+            </ul>
+            <br />
+            <h5>Choose Slow Motion!</h5>
+            <ul class="nav flex-column">
+              <li>
+                <input
+                  type="radio"
+                  name="slowMotion-select"
+                  id="normal"
+                  checked
+                />
+                <label for="normal">normal</label>
+              </li>
+              <li>
+                <input
+                  type="radio"
+                  name="slowMotion-select"
+                  id="twice"
+                  unchecked
+                />
+                <label for="twice">slow</label>
+              </li>
+              <li>
+                <input
+                  id="triple"
+                  name="slowMotion-select"
+                  type="radio"
+                  unchecked
+                />
+                <label for="triple">very slow</label>
+              </li>
+            </ul>
+            <br />
+            <h5>Choose Obstacles!</h5>
+            <ul class="nav flex-column">
+              <li>
+                <input type="radio" name="weights-select" id="one" checked />
+                <label for="one">wall</label>
+              </li>
+              <li>
+                <input type="radio" name="weights-select" id="two" unchecked />
+                <label for="two">light</label>
+              </li>
+              <li>
+                <input
+                  type="radio"
+                  name="weights-select"
+                  id="three"
+                  unchecked
+                />
+                <label for="three">medium</label>
+              </li>
+              <li>
+                <input id="four" name="weights-select" type="radio" unchecked />
+                <label for="four">heavy</label>
               </li>
             </ul>
             <!-- <h5>Show Algorithm process?</h5>
