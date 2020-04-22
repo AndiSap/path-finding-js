@@ -216,12 +216,7 @@ class Gui {
    * Resets element selection on clearGrid to default to start point
    */
   resetElementsUi = () => {
-    document.getElementById(htmlElement.startPointButton).checked = true;
-    document.getElementById(htmlElement.endPointButton).checked = false;
-    document.getElementById(htmlElement.obstacleWall).checked = false;
-    document.getElementById(htmlElement.obstacleLight).checked = false;
-    document.getElementById(htmlElement.obstacleMedium).checked = false;
-    document.getElementById(htmlElement.obstacleHeavy).checked = false;
+    document.getElementById(htmlElement.startPointButton).click();
   };
 
   /**
