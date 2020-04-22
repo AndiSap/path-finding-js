@@ -25,8 +25,9 @@ class Gui {
   };
   walls = [];
   alreadyExecuted = false;
-  choosingStartPoint = false;
+  choosingStartPoint = true;
   choosingEndPoint = false;
+  choosingObstacle = false;
   dijkstra = new Dijkstra();
   astar = new AStar();
   weightsActive = false;
@@ -55,11 +56,11 @@ class Gui {
       this.onStartAlgorithmButtonClicked();
       this.onChooseStartPointButtonClicked();
       this.onChooseEndPointButtonClicked();
+      this.onSetWeights();
       this.onAstartClicked();
       this.onDijkstraClicked();
       this.onOtherClicked();
       this.onSlowMotion();
-      this.onSetWeights();
     });
   };
 
@@ -208,17 +209,14 @@ class Gui {
     this.currentWeight = "";
     this.weights = [];
     this.weightsActive = false;
-    this.resetWeightsUi();
+    this.resetElementsUi();
   };
 
   /**
-   * Resets obstacle selection on clearGrid to default to wall
+   * Resets element selection on clearGrid to default to start point
    */
-  resetWeightsUi = () => {
-    document.getElementById(htmlElement.obstacleWall).checked = true;
-    document.getElementById(htmlElement.obstacleLight).checked = false;
-    document.getElementById(htmlElement.obstacleMedium).checked = false;
-    document.getElementById(htmlElement.obstacleHeavy).checked = false;
+  resetElementsUi = () => {
+    document.getElementById(htmlElement.startPointButton).click();
   };
 
   /**
@@ -316,14 +314,10 @@ class Gui {
       .getElementById(htmlElement.startPointButton)
       .addEventListener(events.click, () => {
         console.log("Choose start point button clicked");
-        if (this.choosingStartPoint) {
-          this.choosingStartPoint = false;
-        } else {
-          this.choosingStartPoint = true;
-          this.choosingEndPoint = false;
-        }
+        this.choosingStartPoint = true;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = false;
         console.log("choosingStart: " + this.choosingStartPoint);
-        console.log("choosingEnd: " + this.choosingEndPoint);
       });
   };
 
@@ -335,13 +329,9 @@ class Gui {
       .getElementById(htmlElement.endPointButton)
       .addEventListener(events.click, () => {
         console.log("Choose end point button clicked");
-        if (this.choosingEndPoint) {
-          this.choosingEndPoint = false;
-        } else {
-          this.choosingEndPoint = true;
-          this.choosingStartPoint = false;
-        }
-        console.log("choosingStart: " + this.choosingStartPoint);
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = true;
+        this.choosingObstacle = false;
         console.log("choosingEnd: " + this.choosingEndPoint);
       });
   };
@@ -400,12 +390,15 @@ class Gui {
   };
 
   /**
-   * Executed once one of the weights selection is clicked
+   * Executed once one of the elements selection is clicked
    */
   onSetWeights = () => {
     document
       .getElementById(htmlElement.obstacleWall)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = false;
         console.log(`Setting obstacle to: ${cellTypes.wall}`);
         this.currentWeight = cellTypes.wall;
@@ -413,6 +406,9 @@ class Gui {
     document
       .getElementById(htmlElement.obstacleLight)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleLight}`);
         this.currentWeight = cellTypes.obstacleLight;
@@ -420,6 +416,9 @@ class Gui {
     document
       .getElementById(htmlElement.obstacleMedium)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleMedium}`);
         this.currentWeight = cellTypes.obstacleMedium;
@@ -427,6 +426,9 @@ class Gui {
     document
       .getElementById(htmlElement.obstacleHeavy)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleHeavy}`);
         this.currentWeight = cellTypes.obstacleHeavy;

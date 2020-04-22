@@ -52,43 +52,56 @@
       <div class="row">
         <nav class="col-md-3 d-none d-md-block bg-light sidebar v-100">
           <div class="sidebar-sticky" style="height: 100vh;">
+            <br />
+            <br />
+            <br />
+            <h5>Place element on grid!</h5>
             <ul class="nav flex-column">
-              <li class="nav-item">
-                <p>&nbsp;</p>
+              <li>
+                <input
+                  type="radio"
+                  id="chooseStartButton"
+                  name="element-select"
+                  checked
+                />
+                <label for="startpoint">Startpoint</label>
               </li>
-              <li class="nav-item">
-                <a id="chooseStartButton" class="nav-link" href="#"
-                  >Choose Startpoint</a
-                >
+              <li>
+                <input
+                  type="radio"
+                  id="chooseEndButton"
+                  name="element-select"
+                  unchecked
+                />
+                <label for="endpoint">Endpoint</label>
               </li>
-              <li class="nav-item draggable">
-                <i
-                  class="nav-link fas fa-angle-double-right"
-                  draggable="true"
-                ></i>
+              <h6>Obstacles:</h6>
+              <li>
+                <input type="radio" name="element-select" id="two" unchecked />
+                <label for="two">Light Obstacle</label>
               </li>
-              <li class="nav-item">
-                <a id="chooseEndButton" class="nav-link" href="#"
-                  >Choose Endpoint</a
-                >
+              <li>
+                <input
+                  type="radio"
+                  name="element-select"
+                  id="three"
+                  unchecked
+                />
+                <label for="three">Medium Obstacle</label>
               </li>
-              <li class="nav-item draggable">
-                <i class="nav-link fas fa-bullseye" draggable="true"></i>
+              <li>
+                <input id="four" name="element-select" type="radio" unchecked />
+                <label for="four">Heavy Obstacle</label>
               </li>
-              <li class="nav-item">
-                <a id="setWallsButton" class="nav-link" href="#">Set Walls</a>
+              <li>
+                <input type="radio" name="element-select" id="one" unchecked />
+                <label for="one">Wall</label>
               </li>
-              <li class="nav-item draggable">
-                <i class="nav-link fas fa-stop" draggable="true"></i>
-              </li>
-              <li class="nav-item">
-                <a id="eraserButton" class="nav-link" href="#">Delete Walls</a>
-              </li>
+              
               <li class="nav-item draggable">
                 <i class="nav-link fas fa-eraser" draggable="true"></i>
               </li>
             </ul>
-            <br />
             <br />
             <h5>Choose your Algorithm!</h5>
             <ul class="nav flex-column">
@@ -116,7 +129,7 @@
               </li>
             </ul>
             <br />
-            <h5>Choose Slow Motion!</h5>
+            <h5>Choose Speed!</h5>
             <ul class="nav flex-column">
               <li>
                 <input
@@ -125,7 +138,7 @@
                   id="normal"
                   checked
                 />
-                <label for="normal">normal</label>
+                <label for="normal">Normal</label>
               </li>
               <li>
                 <input
@@ -134,7 +147,7 @@
                   id="twice"
                   unchecked
                 />
-                <label for="twice">slow</label>
+                <label for="twice">Slow</label>
               </li>
               <li>
                 <input
@@ -143,46 +156,9 @@
                   type="radio"
                   unchecked
                 />
-                <label for="triple">very slow</label>
+                <label for="triple">Very Slow</label>
               </li>
             </ul>
-            <br />
-            <h5>Choose Obstacles!</h5>
-            <ul class="nav flex-column">
-              <li>
-                <input type="radio" name="weights-select" id="one" checked />
-                <label for="one">wall</label>
-              </li>
-              <li>
-                <input type="radio" name="weights-select" id="two" unchecked />
-                <label for="two">light</label>
-              </li>
-              <li>
-                <input
-                  type="radio"
-                  name="weights-select"
-                  id="three"
-                  unchecked
-                />
-                <label for="three">medium</label>
-              </li>
-              <li>
-                <input id="four" name="weights-select" type="radio" unchecked />
-                <label for="four">heavy</label>
-              </li>
-            </ul>
-            <!-- <h5>Show Algorithm process?</h5>
-            <ul class="nav flex-column">
-              <li>
-                <input
-                  type="radio" id="yes" name="show-algorithm" value="yes" checked />
-                  <label for="dijsktra">Yes</label>
-              </li>
-              <li>
-                <input type="radio" id="no" name="show-algorithm" value="no"/>
-                <label for="dijsktra">No</label>
-              </li>
-         -->
           </div>
         </nav>
         <!-- Grid goes in this div -->

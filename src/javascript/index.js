@@ -7,12 +7,12 @@ let gui = new Gui();
 
 let grid = createGrid(24, 24, function (el, row, col, i) {
   el.className = "clicked";
-  if (gui.choosingStartPoint) {
-    gui.setStartPoint(col, row);
+  if (gui.choosingObstacle) {
+    gui.setObstacle(col, row);
   } else if (gui.choosingEndPoint) {
     gui.setEndPoint(col, row);
   } else {
-    gui.setObstacle(col, row);
+    gui.setStartPoint(col, row);
   }
 });
 
