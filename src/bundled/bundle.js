@@ -383,12 +383,15 @@ let Algorithm = require("./Algorithm");
 
 /**
  * A* algorithm extending Algorithms class
+ *
+ * Reference for A* Algorithm and comparison to Dijkstra:
+ * http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html
  */
 class AStar extends Algorithm {
   /**
-   * heuristic returns shortest distance either row or column wise CHANGE THIS
-   * @param {number} row x distance
-   * @param {number} column y distance
+   * using manhattan distance for heuristic (for square grid without diagonal movement)
+   * @param {Node} currentNode
+   * @param {Node} endNode
    */
   heuristic(currentNode, endNode) {
     let xDiff = Math.abs(currentNode.x - endNode.x);
@@ -488,10 +491,16 @@ let Algorithm = require("./Algorithm");
 
 /**
  * Dijkstra algorithm extending Algorithms class
+ *
+ * Reference for Dijkstra algorithm:
+ * Introduction to Algorithms, Third Edition page 658
+ *
+ * Reference for comparison to A* Algorithm:
+ * http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html
  */
 class Dijkstra extends Algorithm {
   /**
-   * heuristic returns 1 since Dijkstra's algorithm doesn't take
+   * heuristic returns 0 since Dijkstra's algorithm doesn't take shortest
    * x/y difference into account
    */
   heuristic() {
@@ -648,12 +657,13 @@ class Gui {
   };
   walls = [];
   alreadyExecuted = false;
-  choosingStartPoint = false;
+  choosingStartPoint = true;
   choosingEndPoint = false;
+  choosingObstacle = false;
   dijkstra = new Dijkstra();
   astar = new AStar();
   weightsActive = false;
-  currentWeight = "none";
+  currentWeight = "";
 
   /**
    * sets up Gui component
@@ -678,11 +688,11 @@ class Gui {
       this.onStartAlgorithmButtonClicked();
       this.onChooseStartPointButtonClicked();
       this.onChooseEndPointButtonClicked();
+      this.onSetWeights();
       this.onAstartClicked();
       this.onDijkstraClicked();
       this.onOtherClicked();
       this.onSlowMotion();
-      this.onSetWeights();
     });
   };
 
@@ -831,14 +841,16 @@ class Gui {
     this.currentWeight = "";
     this.weights = [];
     this.weightsActive = false;
-    this.resetWeightsUi();
+    this.resetElementsUi();
   };
 
   /**
-   * Resets obstacle selection on clearGrid to default to wall
+   * Resets element selection on clearGrid to default to start point
    */
-  resetWeightsUi = () => {
-    document.getElementById(htmlElement.obstacleWall).checked = true;
+  resetElementsUi = () => {
+    document.getElementById(htmlElement.startPointButton).checked = true;
+    document.getElementById(htmlElement.endPointButton).checked = false;
+    document.getElementById(htmlElement.obstacleWall).checked = false;
     document.getElementById(htmlElement.obstacleLight).checked = false;
     document.getElementById(htmlElement.obstacleMedium).checked = false;
     document.getElementById(htmlElement.obstacleHeavy).checked = false;
@@ -939,14 +951,10 @@ class Gui {
       .getElementById(htmlElement.startPointButton)
       .addEventListener(events.click, () => {
         console.log("Choose start point button clicked");
-        if (this.choosingStartPoint) {
-          this.choosingStartPoint = false;
-        } else {
-          this.choosingStartPoint = true;
-          this.choosingEndPoint = false;
-        }
+        this.choosingStartPoint = true;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = false;
         console.log("choosingStart: " + this.choosingStartPoint);
-        console.log("choosingEnd: " + this.choosingEndPoint);
       });
   };
 
@@ -958,13 +966,9 @@ class Gui {
       .getElementById(htmlElement.endPointButton)
       .addEventListener(events.click, () => {
         console.log("Choose end point button clicked");
-        if (this.choosingEndPoint) {
-          this.choosingEndPoint = false;
-        } else {
-          this.choosingEndPoint = true;
-          this.choosingStartPoint = false;
-        }
-        console.log("choosingStart: " + this.choosingStartPoint);
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = true;
+        this.choosingObstacle = false;
         console.log("choosingEnd: " + this.choosingEndPoint);
       });
   };
@@ -1023,12 +1027,15 @@ class Gui {
   };
 
   /**
-   * Executed once one of the weights selection is clicked
+   * Executed once one of the elements selection is clicked
    */
   onSetWeights = () => {
     document
       .getElementById(htmlElement.obstacleWall)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = false;
         console.log(`Setting obstacle to: ${cellTypes.wall}`);
         this.currentWeight = cellTypes.wall;
@@ -1036,6 +1043,9 @@ class Gui {
     document
       .getElementById(htmlElement.obstacleLight)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleLight}`);
         this.currentWeight = cellTypes.obstacleLight;
@@ -1043,6 +1053,9 @@ class Gui {
     document
       .getElementById(htmlElement.obstacleMedium)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleMedium}`);
         this.currentWeight = cellTypes.obstacleMedium;
@@ -1050,6 +1063,9 @@ class Gui {
     document
       .getElementById(htmlElement.obstacleHeavy)
       .addEventListener(events.click, () => {
+        this.choosingStartPoint = false;
+        this.choosingEndPoint = false;
+        this.choosingObstacle = true;
         this.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleHeavy}`);
         this.currentWeight = cellTypes.obstacleHeavy;
@@ -1072,7 +1088,7 @@ const colors = {
   plain: "white",
   obstacleLight: "#DCDCDC",
   obstacleMedium: "#C0C0C0",
-  obstacleHeavy: "#696969",
+  obstacleHeavy: "#696969"
 };
 
 /**
@@ -1093,7 +1109,7 @@ const htmlElement = {
   obstacleWall: "one",
   obstacleLight: "two",
   obstacleMedium: "three",
-  obstacleHeavy: "four",
+  obstacleHeavy: "four"
 };
 
 /**
@@ -1106,7 +1122,7 @@ const cellTypes = {
   wall: "wall",
   obstacleLight: "light",
   obstacleMedium: "medium",
-  obstacleHeavy: "heavy",
+  obstacleHeavy: "heavy"
 };
 
 /**
@@ -1116,7 +1132,7 @@ const obstacleWeights = {
   wall: 1,
   light: 2,
   medium: 3,
-  heavy: 4,
+  heavy: 4
 };
 
 /**
@@ -1124,7 +1140,7 @@ const obstacleWeights = {
  */
 const events = {
   click: "click",
-  load: "load",
+  load: "load"
 };
 
 /**
@@ -1133,7 +1149,7 @@ const events = {
 const timeouts = {
   default: 0.5,
   slow: 5,
-  verySlow: 15,
+  verySlow: 15
 };
 
 module.exports = {
@@ -1142,7 +1158,7 @@ module.exports = {
   events,
   timeouts,
   obstacleWeights,
-  cellTypes,
+  cellTypes
 };
 
 },{}],9:[function(require,module,exports){
@@ -1155,12 +1171,12 @@ let gui = new Gui();
 
 let grid = createGrid(24, 24, function (el, row, col, i) {
   el.className = "clicked";
-  if (gui.choosingStartPoint) {
-    gui.setStartPoint(col, row);
+  if (gui.choosingObstacle) {
+    gui.setObstacle(col, row);
   } else if (gui.choosingEndPoint) {
     gui.setEndPoint(col, row);
   } else {
-    gui.setObstacle(col, row);
+    gui.setStartPoint(col, row);
   }
 });
 
