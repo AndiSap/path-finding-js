@@ -7,12 +7,19 @@
  * Converts 2d matrix into adjacency graph
  */
 class Grid {
-  constructor(input) {
-    this.nodes = this.buildNodesFromMatrix(input);
-  }
+  startPoint = {
+    x: undefined,
+    y: undefined,
+  };
+  endPoint = {
+    x: undefined,
+    y: undefined,
+  };
+
+  constructor() {}
 
   /**
-   * Build and return the nodes.
+   * Builds the nodes.
    */
   buildNodesFromMatrix = (matrix) => {
     this.height = matrix.length;
@@ -31,14 +38,14 @@ class Grid {
         if (matrix[i][j] === 1) nodes[i][j].walkable = false;
       }
     }
-    return nodes;
+    this.nodes = nodes;
   };
 
   /**
    * Returns cell of matrix [row][column]
    */
-  getNode = (x, y) => {
-    return this.nodes[y][x];
+  getNode = (node) => {
+    return this.nodes[node.y][node.x];
   };
 
   /**
@@ -46,13 +53,6 @@ class Grid {
    */
   setWeight = (x, y, weight) => {
     this.nodes[y][x].weight = weight;
-  };
-
-  /**
-   * Gets weight given of node
-   */
-  getWeight = (x, y) => {
-    return this.nodes[y][x].weight;
   };
 
   /**

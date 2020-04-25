@@ -20,9 +20,9 @@ class Algorithm {
   /**
    * Find and returns the shortest path
    */
-  findShortestPath = (start, end, grid, getVisitedElement) => {
-    let startNode = grid.getNode(start.x, start.y);
-    let endNode = grid.getNode(end.x, end.y);
+  findShortestPath = (grid, getVisitedElement) => {
+    let startNode = grid.getNode(grid.startPoint);
+    let endNode = grid.getNode(grid.endPoint);
     let node, allCurrentNeighbors, neighbor;
     let nodeList = new Heap((first, next) => first.fCost - next.fCost);
 
@@ -56,7 +56,7 @@ class Algorithm {
           neighbor.parent = node;
 
           nodeList.push(neighbor);
-          getVisitedElement(neighbor.x, neighbor.y);
+          getVisitedElement(neighbor);
           neighbor.opened = true;
         }
       }

@@ -44,7 +44,9 @@ const cellTypes = {
   wall: "wall",
   obstacleLight: "light",
   obstacleMedium: "medium",
-  obstacleHeavy: "heavy"
+  obstacleHeavy: "heavy",
+  visitedCell: "visited",
+  shortestPathCell: "shortestPath"
 };
 
 /**
@@ -74,11 +76,20 @@ const timeouts = {
   verySlow: 15
 };
 
+/**
+ * defines size of grid/matrix
+ */
+const gridSize = {
+  row: 24,
+  column: 24
+};
+
 module.exports = {
   colors,
   htmlElement,
   events,
   timeouts,
   obstacleWeights,
-  cellTypes
+  cellTypes,
+  gridSize
 };
