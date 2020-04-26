@@ -407,7 +407,7 @@ var Heap = require("heap");
 
 /**
  * Algorithm class based on: https://github.com/bgrins/javascript-astar
- * Reused components and made modifications/adaptations to suite our use case.
+ * Reused components and made modifications/adaptations to suit our use case.
  */
 class Algorithm {
   /**
@@ -423,7 +423,7 @@ class Algorithm {
   }
 
   /**
-   * Find and returns the shortest paths
+   * Find and returns the shortest path
    */
   findShortestPath = (grid, getVisitedElement) => {
     let startNode = grid.getNode(grid.startPoint);
@@ -516,28 +516,22 @@ let { events, htmlElement, timeouts, cellTypes } = require("./Models");
 class EventListener {
   callback = () => _;
 
+  /**
+   * Creates and calls all neccessary html events
+   * @param {GuiController} guiController instance for manipulating grid data
+   */
   constructor(guiController) {
-    // window.addEventListener(events.load, () => {
     this.guiController = guiController;
 
     window.addEventListener(events.load, () => {
-      // this.createListeners();
-      //   this.callback();
       this.guiController.htmlActions.setGrid();
       this.createListeners();
-      //   this.guiController.htmlActions.setGrid();
-
-      // let test = document.getElementsByClassName(htmlElement.grid);
-      // let putHere = test.item(0);
-      // putHere.appendChild(this.grid);
     });
   }
 
-  //   onWebpageLoaded = (cb) => {
-  //     console.log(`Callback will be executed once webpage loaded`);
-  //     this.callback = cb;
-  //   };
-
+  /**
+   * Creates all html button listeners
+   */
   createListeners = () => {
     this.onClearButtonClicked();
     this.onStartAlgorithmButtonClicked();
@@ -548,6 +542,7 @@ class EventListener {
     this.onDijkstraClicked();
     this.onOtherClicked();
     this.onSlowMotion();
+    this.onEraseClicked();
   };
 
   /**
@@ -582,11 +577,11 @@ class EventListener {
     document
       .getElementById(htmlElement.startPointButton)
       .addEventListener(events.click, () => {
-        console.log("Choose start point button clicked");
+        console.log("Choosing start point");
         this.guiController.choosingStartPoint = true;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = false;
-        console.log("choosingStart: " + this.guiController.choosingStartPoint);
+        this.guiController.erasing = false;
       });
   };
 
@@ -597,14 +592,14 @@ class EventListener {
     document
       .getElementById(htmlElement.endPointButton)
       .addEventListener(events.click, () => {
-        console.log("Choose end point button clicked");
+        console.log("Choosing end point");
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = true;
         this.guiController.choosingObstacle = false;
-        console.log("choosingEnd: " + this.guiController.choosingEndPoint);
+        this.guiController.erasing = false;
       });
   };
-
+  
   /**
    * Executed once A* Algorithm button is clicked
    */
@@ -677,6 +672,7 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = false;
         console.log(`Setting obstacle to: ${cellTypes.wall}`);
         this.guiController.currentWeight = cellTypes.wall;
@@ -687,6 +683,7 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleLight}`);
         this.guiController.currentWeight = cellTypes.obstacleLight;
@@ -697,6 +694,7 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleMedium}`);
         this.guiController.currentWeight = cellTypes.obstacleMedium;
@@ -707,11 +705,28 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleHeavy}`);
         this.guiController.currentWeight = cellTypes.obstacleHeavy;
       });
   };
+  
+  /**
+   * Exectued once erase button is clicked
+   */
+  onEraseClicked = () => {
+    document
+      .getElementById(htmlElement.eraseButton)
+      .addEventListener(events.click, () => {
+        console.log("Erase button clicked");
+        this.guiController.choosingStartPoint = false;
+        this.guiController.choosingEndPoint = false;
+        this.guiController.choosingObstacle = false;
+        this.guiController.erasing = true;
+    });
+  };
+  
 }
 
 module.exports = EventListener;
@@ -720,7 +735,7 @@ module.exports = EventListener;
 /**
  *
  * Grid class based on: https://github.com/bgrins/javascript-astar
- * Reused components and made modifications/adaptations to suite our use case.
+ * Reused components and made modifications/adaptations to suit our use case.
  *
  * The Grid class, encapsulates layout of nodes.
  * Converts 2d matrix into adjacency graph
@@ -735,9 +750,7 @@ class Grid {
     y: undefined,
   };
 
-  constructor(/*input*/) {
-    // this.nodes = this.buildNodesFromMatrix(input);
-  }
+  constructor() {}
 
   /**
    * Builds the nodes.
@@ -770,18 +783,18 @@ class Grid {
   };
 
   /**
+   * Returns weight of given node
+   */
+  getWeight = (x, y) => {
+      return this.nodes[y][x].weight;
+  }
+
+  /**
    * Sets weight of given node
    */
   setWeight = (x, y, weight) => {
     this.nodes[y][x].weight = weight;
   };
-
-  // /**
-  //  * Gets weight given of node
-  //  */
-  // getWeight = (node) => {
-  //   return this.nodes[node.y][node.x].weight;
-  // };
 
   /**
    * Returns true if position is inside of the grid and walkable
@@ -852,8 +865,6 @@ let HTMLActions = require("./HTMLActions");
 let EventListener = require("./EventListener");
 let {
   colors,
-  events,
-  htmlElement,
   timeouts,
   obstacleWeights,
   cellTypes,
@@ -863,6 +874,7 @@ let {
 class GuiController {
   visited = new Array();
   weights = new Array();
+  typeOfCell;
   timeout = timeouts.default;
   timeWaited = 0;
 
@@ -870,6 +882,7 @@ class GuiController {
   choosingStartPoint = true;
   choosingEndPoint = false;
   choosingObstacle = false;
+  erasing = false
   weightsActive = false;
   currentWeight = "";
 
@@ -897,28 +910,14 @@ class GuiController {
 
     this.htmlActions = new HTMLActions(this.grid);
     let eventListener = new EventListener(this);
-    // eventsListener.onWebpageLoaded(setGui);
-
-    // window.addEventListener(events.load, () => {
-    //   let test = document.getElementsByClassName(htmlElement.grid);
-    //   let putHere = test.item(0);
-    //   putHere.appendChild(this.grid);
-    //   this.onClearButtonClicked();
-    //   this.onStartAlgorithmButtonClicked();
-    //   this.onChooseStartPointButtonClicked();
-    //   this.onChooseEndPointButtonClicked();
-    //   this.onSetWeights();
-    //   this.onAstartClicked();
-    //   this.onDijkstraClicked();
-    //   this.onOtherClicked();
-    //   this.onSlowMotion();
-    // });
   };
 
   onGridClicked = (element, selectedRow, selectedColumn) => {
     element.className = "clicked";
     if (this.choosingObstacle) {
       this.setObstacle(selectedColumn, selectedRow);
+    } else if(this.erasing){
+      this.eraseElement(selectedColumn, selectedRow);
     } else if (this.choosingEndPoint) {
       this.setEndPoint(selectedColumn, selectedRow);
     } else {
@@ -944,10 +943,13 @@ class GuiController {
      * If walls are added, change matrix cell to 1
      */
     let matrix = new Array(rows);
+    this.typeOfCell = new Array(rows);
     for (let i = 0; i < rows; i++) {
       matrix[i] = new Array(rows);
+      this.typeOfCell[i] = new Array(rows);
       for (let j = 0; j < rows; j++) {
         matrix[i][j] = 0;
+        this.typeOfCell[i][j] = "plain";
       }
     }
     return matrix;
@@ -971,6 +973,7 @@ class GuiController {
       this.inputGrid.startPoint.y,
       cellTypes.start
     );
+    this.typeOfCell[row][col] = "start";
     console.log(
       `startpoint: (${this.inputGrid.startPoint.x}, ${this.inputGrid.startPoint.y})`
     );
@@ -994,6 +997,7 @@ class GuiController {
       this.inputGrid.endPoint.y,
       cellTypes.end
     );
+    this.typeOfCell[row][col] = "end"
     console.log(
       `endpoint: (${this.inputGrid.endPoint.x}, ${this.inputGrid.endPoint.y})`
     );
@@ -1018,6 +1022,7 @@ class GuiController {
     console.log(`Wall: (${col}, ${row})`);
     this.matrix[row][col] = 1;
     this.htmlActions.setElement(col, row, cellTypes.wall);
+    this.typeOfCell[row][col] = "wall";
   };
 
   /**
@@ -1030,10 +1035,43 @@ class GuiController {
     this.weights.push({
       x: col,
       y: row,
-      weight: obstacleWeights[this.currentWeight],
+      weight: obstacleWeights[this.currentWeight]
     });
     this.htmlActions.setElement(col, row, this.currentWeight);
+    this.typeOfCell[row][col] = this.currentWeight;
+    for(let i = 0; i < this.weights.length; i++){
+      console.log(this.weights[i]);
+    }
   };
+  
+  /**
+   * Erases an element
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  eraseElement = (row, col) => {
+    let cellType = this.typeOfCell[row][col];
+    switch (cellType) {
+      case "start":
+        this.inputGrid.startPoint = { x: undefined, y: undefined };
+      case "end":
+        this.inputGrid.endPoint = { x: undefined, y: undefined };
+      case "wall":
+        this.matrix[row][col] = 1;
+      default: //weight
+        if(cellType === "light" || cellType === "medium" || cellType === "heavy"){
+          for(let i = 0; i < this.weights.length; i++){
+            let point = this.weights[i];
+            if(point["x"] === col && point["y"] === row){
+              this.weights.splice(i, 1);
+              break;
+            }
+          }
+        }
+    }
+    this.htmlActions.setElement(col, row, cellTypes.plain);
+    console.log(`Erased: (${col}, ${row})`);
+  }
 
   /**
    * clears grid from all ui changes and resets saved start/endpoint and walls
@@ -1042,7 +1080,6 @@ class GuiController {
     console.log("Clearing grid");
     this.inputGrid.startPoint = { x: undefined, y: undefined };
     this.inputGrid.endPoint = { x: undefined, y: undefined };
-    // this.walls = [];
     this.visited = [];
 
     for (let x = 0; x < this.matrix.length; x++) {
@@ -1177,17 +1214,10 @@ class HtmlActions {
   /**
    * sets up grid html component
    */
-  setGrid = (/*grid*/) => {
-    //this.grid = grid;
-
-    // window.addEventListener(events.load, () => {
-    let test = document.getElementsByClassName(htmlElement.grid);
-    let putHere = test.item(0);
+  setGrid = () => {
+    let htmlGridDiv = document.getElementsByClassName(htmlElement.grid);
+    let putHere = htmlGridDiv.item(0);
     putHere.appendChild(this.grid);
-
-    // let events = new EventListeners(this);
-    // events.createListeners();
-    // });
   };
 
   /**
@@ -1229,29 +1259,13 @@ class HtmlActions {
         break;
     }
   };
-
+  
   /**
    * Resets element selection on clearGrid to default to start point
    */
   resetElementsUi = () => {
     document.getElementById(htmlElement.startPointButton).click();
   };
-
-  //   /**
-  //    * sets up grid html component
-  //    */
-  //   setGrid = (grid) => {
-  //     this.grid = grid;
-
-  //     // window.addEventListener(events.load, () => {
-  //     let test = document.getElementsByClassName(htmlElement.grid);
-  //     let putHere = test.item(0);
-  //     putHere.appendChild(this.grid);
-
-  //     // let events = new EventListeners(this);
-  //     // events.createListeners();
-  //     // });
-  //   };
 }
 
 module.exports = HtmlActions;
@@ -1290,7 +1304,8 @@ const htmlElement = {
   obstacleWall: "one",
   obstacleLight: "two",
   obstacleMedium: "three",
-  obstacleHeavy: "four"
+  obstacleHeavy: "four",
+  eraseButton: "erase"
 };
 
 /**
@@ -1360,13 +1375,6 @@ module.exports = {
 let GuiController = require("./GuiController");
 
 let guiController = new GuiController();
-
-// let setGui = () => {
-//   guiController.setGrid(grid);
-// };
-
-// eventsListener.onWebpageLoaded(setGui);
-
 guiController.setup();
 
 },{"./GuiController":8}]},{},[11]);

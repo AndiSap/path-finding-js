@@ -1,7 +1,7 @@
 /**
  *
  * Grid class based on: https://github.com/bgrins/javascript-astar
- * Reused components and made modifications/adaptations to suite our use case.
+ * Reused components and made modifications/adaptations to suit our use case.
  *
  * The Grid class, encapsulates layout of nodes.
  * Converts 2d matrix into adjacency graph
@@ -47,6 +47,13 @@ class Grid {
   getNode = (node) => {
     return this.nodes[node.y][node.x];
   };
+
+  /**
+   * Returns weight of given node
+   */
+  getWeight = (x, y) => {
+      return this.nodes[y][x].weight;
+  }
 
   /**
    * Sets weight of given node

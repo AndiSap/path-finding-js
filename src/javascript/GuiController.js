@@ -14,6 +14,7 @@ let {
 class GuiController {
   visited = new Array();
   weights = new Array();
+  typeOfCell;
   timeout = timeouts.default;
   timeWaited = 0;
 
@@ -21,6 +22,7 @@ class GuiController {
   choosingStartPoint = true;
   choosingEndPoint = false;
   choosingObstacle = false;
+  erasing = false
   weightsActive = false;
   currentWeight = "";
 
@@ -54,6 +56,8 @@ class GuiController {
     element.className = "clicked";
     if (this.choosingObstacle) {
       this.setObstacle(selectedColumn, selectedRow);
+    } else if(this.erasing){
+      this.eraseElement(selectedColumn, selectedRow);
     } else if (this.choosingEndPoint) {
       this.setEndPoint(selectedColumn, selectedRow);
     } else {
@@ -79,10 +83,13 @@ class GuiController {
      * If walls are added, change matrix cell to 1
      */
     let matrix = new Array(rows);
+    this.typeOfCell = new Array(rows);
     for (let i = 0; i < rows; i++) {
       matrix[i] = new Array(rows);
+      this.typeOfCell[i] = new Array(rows);
       for (let j = 0; j < rows; j++) {
         matrix[i][j] = 0;
+        this.typeOfCell[i][j] = "plain";
       }
     }
     return matrix;
@@ -106,6 +113,7 @@ class GuiController {
       this.inputGrid.startPoint.y,
       cellTypes.start
     );
+    this.typeOfCell[row][col] = "start";
     console.log(
       `startpoint: (${this.inputGrid.startPoint.x}, ${this.inputGrid.startPoint.y})`
     );
@@ -129,6 +137,7 @@ class GuiController {
       this.inputGrid.endPoint.y,
       cellTypes.end
     );
+    this.typeOfCell[row][col] = "end"
     console.log(
       `endpoint: (${this.inputGrid.endPoint.x}, ${this.inputGrid.endPoint.y})`
     );
@@ -153,6 +162,7 @@ class GuiController {
     console.log(`Wall: (${col}, ${row})`);
     this.matrix[row][col] = 1;
     this.htmlActions.setElement(col, row, cellTypes.wall);
+    this.typeOfCell[row][col] = "wall";
   };
 
   /**
@@ -165,10 +175,43 @@ class GuiController {
     this.weights.push({
       x: col,
       y: row,
-      weight: obstacleWeights[this.currentWeight],
+      weight: obstacleWeights[this.currentWeight]
     });
     this.htmlActions.setElement(col, row, this.currentWeight);
+    this.typeOfCell[row][col] = this.currentWeight;
+    for(let i = 0; i < this.weights.length; i++){
+      console.log(this.weights[i]);
+    }
   };
+  
+  /**
+   * Erases an element
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  eraseElement = (row, col) => {
+    let cellType = this.typeOfCell[row][col];
+    switch (cellType) {
+      case "start":
+        this.inputGrid.startPoint = { x: undefined, y: undefined };
+      case "end":
+        this.inputGrid.endPoint = { x: undefined, y: undefined };
+      case "wall":
+        this.matrix[row][col] = 1;
+      default: //weight
+        if(cellType === "light" || cellType === "medium" || cellType === "heavy"){
+          for(let i = 0; i < this.weights.length; i++){
+            let point = this.weights[i];
+            if(point["x"] === col && point["y"] === row){
+              this.weights.splice(i, 1);
+              break;
+            }
+          }
+        }
+    }
+    this.htmlActions.setElement(col, row, cellTypes.plain);
+    console.log(`Erased: (${col}, ${row})`);
+  }
 
   /**
    * clears grid from all ui changes and resets saved start/endpoint and walls

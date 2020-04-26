@@ -29,6 +29,7 @@ class EventListener {
     this.onDijkstraClicked();
     this.onOtherClicked();
     this.onSlowMotion();
+    this.onEraseClicked();
   };
 
   /**
@@ -63,11 +64,11 @@ class EventListener {
     document
       .getElementById(htmlElement.startPointButton)
       .addEventListener(events.click, () => {
-        console.log("Choose start point button clicked");
+        console.log("Choosing start point");
         this.guiController.choosingStartPoint = true;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = false;
-        console.log("choosingStart: " + this.guiController.choosingStartPoint);
+        this.guiController.erasing = false;
       });
   };
 
@@ -78,14 +79,14 @@ class EventListener {
     document
       .getElementById(htmlElement.endPointButton)
       .addEventListener(events.click, () => {
-        console.log("Choose end point button clicked");
+        console.log("Choosing end point");
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = true;
         this.guiController.choosingObstacle = false;
-        console.log("choosingEnd: " + this.guiController.choosingEndPoint);
+        this.guiController.erasing = false;
       });
   };
-
+  
   /**
    * Executed once A* Algorithm button is clicked
    */
@@ -158,6 +159,7 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = false;
         console.log(`Setting obstacle to: ${cellTypes.wall}`);
         this.guiController.currentWeight = cellTypes.wall;
@@ -168,6 +170,7 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleLight}`);
         this.guiController.currentWeight = cellTypes.obstacleLight;
@@ -178,6 +181,7 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleMedium}`);
         this.guiController.currentWeight = cellTypes.obstacleMedium;
@@ -188,11 +192,28 @@ class EventListener {
         this.guiController.choosingStartPoint = false;
         this.guiController.choosingEndPoint = false;
         this.guiController.choosingObstacle = true;
+        this.guiController.erasing = false;
         this.guiController.weightsActive = true;
         console.log(`Setting obstacle to: ${cellTypes.obstacleHeavy}`);
         this.guiController.currentWeight = cellTypes.obstacleHeavy;
       });
   };
+  
+  /**
+   * Exectued once erase button is clicked
+   */
+  onEraseClicked = () => {
+    document
+      .getElementById(htmlElement.eraseButton)
+      .addEventListener(events.click, () => {
+        console.log("Erase button clicked");
+        this.guiController.choosingStartPoint = false;
+        this.guiController.choosingEndPoint = false;
+        this.guiController.choosingObstacle = false;
+        this.guiController.erasing = true;
+    });
+  };
+  
 }
 
 module.exports = EventListener;
