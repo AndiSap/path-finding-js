@@ -54,7 +54,7 @@ class GuiController {
 
   onGridClicked = (element, selectedRow, selectedColumn) => {
     element.className = "clicked";
-    this.eraseElement(selectedColumn, selectedRow);
+    this.eraseElement(selectedColumn, selectedRow); //Erase element called to avoid duplicate weights and invisible walls
     if (this.choosingObstacle) {
       this.setObstacle(selectedColumn, selectedRow);
     } else if(this.erasing){
@@ -172,7 +172,6 @@ class GuiController {
    * @param {number} col represents x coord
    */
   setWeight = (row, col) => {
-    let cellType = this.typeOfCell[row][col];
     console.log(`Weight: (${col}, ${row}): ${this.currentWeight}`);
     this.weights.push({
       x: col,
