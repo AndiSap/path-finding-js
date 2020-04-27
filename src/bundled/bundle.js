@@ -914,6 +914,7 @@ class GuiController {
 
   onGridClicked = (element, selectedRow, selectedColumn) => {
     element.className = "clicked";
+    this.eraseElement(selectedColumn, selectedRow);
     if (this.choosingObstacle) {
       this.setObstacle(selectedColumn, selectedRow);
     } else if(this.erasing){
@@ -1031,6 +1032,7 @@ class GuiController {
    * @param {number} col represents x coord
    */
   setWeight = (row, col) => {
+    let cellType = this.typeOfCell[row][col];
     console.log(`Weight: (${col}, ${row}): ${this.currentWeight}`);
     this.weights.push({
       x: col,
@@ -1041,6 +1043,21 @@ class GuiController {
     this.typeOfCell[row][col] = this.currentWeight;
     for(let i = 0; i < this.weights.length; i++){
       console.log(this.weights[i]);
+    }
+  };
+  
+  /**
+   * Removes a weight
+   * @param {number} row represents y coord
+   * @param {number} col represents x coord
+   */
+  removeWeight = (row, col) => {
+    for(let i = 0; i < this.weights.length; i++){
+      let point = this.weights[i];
+      if(point["x"] === col && point["y"] === row){
+        this.weights.splice(i, 1);
+        break;
+      }
     }
   };
   
@@ -1057,16 +1074,10 @@ class GuiController {
       case "end":
         this.inputGrid.endPoint = { x: undefined, y: undefined };
       case "wall":
-        this.matrix[row][col] = 1;
-      default: //weight
+        this.matrix[row][col] = 0;
+      default:
         if(cellType === "light" || cellType === "medium" || cellType === "heavy"){
-          for(let i = 0; i < this.weights.length; i++){
-            let point = this.weights[i];
-            if(point["x"] === col && point["y"] === row){
-              this.weights.splice(i, 1);
-              break;
-            }
-          }
+          this.removeWeight(row, col);
         }
     }
     this.htmlActions.setElement(col, row, cellTypes.plain);
