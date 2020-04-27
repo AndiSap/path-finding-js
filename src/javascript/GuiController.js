@@ -57,11 +57,9 @@ class GuiController {
     this.eraseElement(selectedColumn, selectedRow); //Erase element called to avoid duplicate weights and invisible walls
     if (this.choosingObstacle) {
       this.setObstacle(selectedColumn, selectedRow);
-    } else if(this.erasing){
-      this.eraseElement(selectedColumn, selectedRow);
     } else if (this.choosingEndPoint) {
       this.setEndPoint(selectedColumn, selectedRow);
-    } else {
+    } else if (this.choosingStartPoint) {
       this.setStartPoint(selectedColumn, selectedRow);
     }
   };
@@ -90,7 +88,7 @@ class GuiController {
       this.typeOfCell[i] = new Array(rows);
       for (let j = 0; j < rows; j++) {
         matrix[i][j] = 0;
-        this.typeOfCell[i][j] = "plain";
+        this.typeOfCell[i][j] = cellTypes.plain;
       }
     }
     return matrix;
@@ -114,7 +112,7 @@ class GuiController {
       this.inputGrid.startPoint.y,
       cellTypes.start
     );
-    this.typeOfCell[row][col] = "start";
+    this.typeOfCell[row][col] = cellTypes.start;
     console.log(
       `startpoint: (${this.inputGrid.startPoint.x}, ${this.inputGrid.startPoint.y})`
     );
@@ -138,7 +136,7 @@ class GuiController {
       this.inputGrid.endPoint.y,
       cellTypes.end
     );
-    this.typeOfCell[row][col] = "end"
+    this.typeOfCell[row][col] = cellTypes.end;
     console.log(
       `endpoint: (${this.inputGrid.endPoint.x}, ${this.inputGrid.endPoint.y})`
     );
@@ -163,7 +161,7 @@ class GuiController {
     console.log(`Wall: (${col}, ${row})`);
     this.matrix[row][col] = 1;
     this.htmlActions.setElement(col, row, cellTypes.wall);
-    this.typeOfCell[row][col] = "wall";
+    this.typeOfCell[row][col] = cellTypes.wall;
   };
 
   /**
@@ -180,9 +178,6 @@ class GuiController {
     });
     this.htmlActions.setElement(col, row, this.currentWeight);
     this.typeOfCell[row][col] = this.currentWeight;
-    for(let i = 0; i < this.weights.length; i++){
-      console.log(this.weights[i]);
-    }
   };
   
   /**
@@ -208,14 +203,17 @@ class GuiController {
   eraseElement = (row, col) => {
     let cellType = this.typeOfCell[row][col];
     switch (cellType) {
-      case "start":
+      case cellTypes.start:
         this.inputGrid.startPoint = { x: undefined, y: undefined };
-      case "end":
+        break;
+      case cellTypes.end:
         this.inputGrid.endPoint = { x: undefined, y: undefined };
-      case "wall":
+        break;
+      case cellTypes.wall:
         this.matrix[row][col] = 0;
+        break;
       default:
-        if(cellType === "light" || cellType === "medium" || cellType === "heavy"){
+        if(cellType === cellTypes.obstacleLight || cellType === cellTypes.obstacleHeavy || cellType === cellTypes.obstacleMedium){
           this.removeWeight(row, col);
         }
     }
@@ -234,7 +232,8 @@ class GuiController {
 
     for (let x = 0; x < this.matrix.length; x++) {
       for (let y = 0; y < this.matrix[0].length; y++) {
-        this.grid.rows[x].cells[y].style.backgroundColor = colors.plain;
+        this.typeOfCell[x][y] = cellTypes.plain;
+        this.htmlActions.setElement(x, y, cellTypes.plain);
       }
     }
     this.alreadyExecuted = false;
