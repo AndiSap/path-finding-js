@@ -58,51 +58,36 @@
             <h5>Place element on grid!</h5>
             <ul class="nav flex-column">
               <li>
-                <input
-                  type="radio"
-                  id="chooseStartButton"
-                  name="element-select"
-                  checked
-                />
-                <label for="startpoint">Startpoint</label>
+                <input type="radio" name="element-select" id="chooseStartButton" checked />
+                <label for="chooseStartButton">Startpoint</label>
               </li>
               <li>
-                <input
-                  type="radio"
-                  id="chooseEndButton"
-                  name="element-select"
-                  unchecked
-                />
-                <label for="endpoint">Endpoint</label>
+                <input type="radio" name="element-select" id="chooseEndButton" />
+                <label for="chooseEndButton">Endpoint</label>
               </li>
               <h6>Obstacles:</h6>
               <li>
-                <input type="radio" name="element-select" id="two" unchecked />
+                <input type="radio" name="element-select" id="two" />
                 <label for="two">Light Obstacle</label>
               </li>
               <li>
-                <input
-                  type="radio"
-                  name="element-select"
-                  id="three"
-                  unchecked
-                />
+                <input type="radio" name="element-select" id="three" />
                 <label for="three">Medium Obstacle</label>
               </li>
               <li>
-                <input id="four" name="element-select" type="radio" unchecked />
+                <input type="radio" name="element-select" id="four" />
                 <label for="four">Heavy Obstacle</label>
               </li>
               <li>
-                <input type="radio" name="element-select" id="one" unchecked />
+                <input type="radio" name="element-select" id="one" />
                 <label for="one">Wall</label>
               </li>
-              
-              <li class="nav-item draggable">
-                <i class="nav-link fas fa-eraser" draggable="true"></i>
+              <h6>Eraser:</h6>
+              <li>
+                <input type="radio" name="element-select" id="erase" />
+                <label for="erase"><i class="nav-link fas fa-eraser"></i></label>
               </li>
             </ul>
-            <br />
             <h5>Choose your Algorithm!</h5>
             <ul class="nav flex-column">
               <li>

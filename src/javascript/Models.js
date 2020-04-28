@@ -31,7 +31,8 @@ const htmlElement = {
   obstacleWall: "one",
   obstacleLight: "two",
   obstacleMedium: "three",
-  obstacleHeavy: "four"
+  obstacleHeavy: "four",
+  eraseButton: "erase"
 };
 
 /**

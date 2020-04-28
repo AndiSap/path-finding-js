@@ -2,7 +2,7 @@ var Heap = require("heap");
 
 /**
  * Algorithm class based on: https://github.com/bgrins/javascript-astar
- * Reused components and made modifications/adaptations to suite our use case.
+ * Reused components and made modifications/adaptations to suit our use case.
  */
 class Algorithm {
   /**

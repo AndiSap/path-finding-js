@@ -81,7 +81,7 @@ class HtmlActions {
         break;
     }
   };
-
+  
   /**
    * Resets element selection on clearGrid to default to start point
    */
