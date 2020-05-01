@@ -3,13 +3,7 @@ let Dijkstra = require("./Dijkstra");
 let AStar = require("./AStar");
 let HTMLActions = require("./HTMLActions");
 let EventListener = require("./EventListener");
-let {
-  colors,
-  timeouts,
-  obstacleWeights,
-  cellTypes,
-  gridSize,
-} = require("./Models");
+let { timeouts, obstacleWeights, cellTypes, gridSize } = require("./Models");
 
 class GuiController {
   visited = new Array();
@@ -22,7 +16,7 @@ class GuiController {
   choosingStartPoint = true;
   choosingEndPoint = false;
   choosingObstacle = false;
-  erasing = false
+  erasing = false;
   weightsActive = false;
   currentWeight = "";
 
@@ -54,13 +48,15 @@ class GuiController {
 
   onGridClicked = (element, selectedRow, selectedColumn) => {
     element.className = "clicked";
-    this.eraseElement(selectedColumn, selectedRow); //Erase element called to avoid duplicate weights and invisible walls
     if (this.choosingObstacle) {
+      this.eraseElement(selectedColumn, selectedRow); //Erase element called to avoid duplicate weights and invisible walls
       this.setObstacle(selectedColumn, selectedRow);
     } else if (this.choosingEndPoint) {
       this.setEndPoint(selectedColumn, selectedRow);
     } else if (this.choosingStartPoint) {
       this.setStartPoint(selectedColumn, selectedRow);
+    } else {
+      this.eraseElement(selectedColumn, selectedRow); //Erase element called to avoid duplicate weights and invisible walls
     }
   };
 
@@ -100,12 +96,16 @@ class GuiController {
    * @param {number} col represents x coord
    */
   setStartPoint = (row, col) => {
-    if (this.inputGrid.startPoint.x !== undefined)
+    if (this.inputGrid.startPoint.x !== undefined) {
       this.htmlActions.setElement(
         this.inputGrid.startPoint.x,
         this.inputGrid.startPoint.y,
         cellTypes.plain
       );
+      this.typeOfCell[this.inputGrid.startPoint.y][
+        this.inputGrid.startPoint.x
+      ] = cellTypes.plain;
+    }
     this.inputGrid.startPoint = { x: col, y: row };
     this.htmlActions.setElement(
       this.inputGrid.startPoint.x,
@@ -124,12 +124,15 @@ class GuiController {
    * @param {number} col represents x coord
    */
   setEndPoint = (row, col) => {
-    if (this.inputGrid.endPoint.x !== undefined)
+    if (this.inputGrid.endPoint.x !== undefined) {
       this.htmlActions.setElement(
         this.inputGrid.endPoint.x,
         this.inputGrid.endPoint.y,
         cellTypes.plain
       );
+      this.typeOfCell[this.inputGrid.endPoint.y][this.inputGrid.endPoint.x] =
+        cellTypes.plain;
+    }
     this.inputGrid.endPoint = { x: col, y: row };
     this.htmlActions.setElement(
       this.inputGrid.endPoint.x,
@@ -174,27 +177,27 @@ class GuiController {
     this.weights.push({
       x: col,
       y: row,
-      weight: obstacleWeights[this.currentWeight]
+      weight: obstacleWeights[this.currentWeight],
     });
     this.htmlActions.setElement(col, row, this.currentWeight);
     this.typeOfCell[row][col] = this.currentWeight;
   };
-  
+
   /**
    * Removes a weight
    * @param {number} row represents y coord
    * @param {number} col represents x coord
    */
   removeWeight = (row, col) => {
-    for(let i = 0; i < this.weights.length; i++){
+    for (let i = 0; i < this.weights.length; i++) {
       let point = this.weights[i];
-      if(point["x"] === col && point["y"] === row){
+      if (point["x"] === col && point["y"] === row) {
         this.weights.splice(i, 1);
         break;
       }
     }
   };
-  
+
   /**
    * Erases an element
    * @param {number} row represents y coord
@@ -213,13 +216,18 @@ class GuiController {
         this.matrix[row][col] = 0;
         break;
       default:
-        if(cellType === cellTypes.obstacleLight || cellType === cellTypes.obstacleHeavy || cellType === cellTypes.obstacleMedium){
+        if (
+          cellType === cellTypes.obstacleLight ||
+          cellType === cellTypes.obstacleHeavy ||
+          cellType === cellTypes.obstacleMedium
+        ) {
           this.removeWeight(row, col);
         }
     }
     this.htmlActions.setElement(col, row, cellTypes.plain);
+    this.typeOfCell[row][col] = cellTypes.plain;
     console.log(`Erased: (${col}, ${row})`);
-  }
+  };
 
   /**
    * clears grid from all ui changes and resets saved start/endpoint and walls
