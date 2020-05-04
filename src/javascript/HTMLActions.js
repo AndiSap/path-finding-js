@@ -76,6 +76,16 @@ class HtmlActions {
       case cellTypes.visitedCell:
         element.style.backgroundColor = colors.visited;
         break;
+      case cellTypes.visitedLight:
+        element.style.backgroundColor = colors.visitedLight;
+        console.log("light colored");
+        break;
+      case cellTypes.visitedMedium:
+        element.style.backgroundColor = colors.visitedMedium;
+        break;
+      case cellTypes.visitedHeavy:
+        element.style.backgroundColor = colors.visitedHeavy;
+        break;
       case cellTypes.shortestPathCell:
         element.style.backgroundColor = colors.shortestPath;
         break;

@@ -56,7 +56,7 @@ class GuiController {
     } else if (this.choosingStartPoint) {
       this.setStartPoint(selectedColumn, selectedRow);
     } else {
-      this.eraseElement(selectedColumn, selectedRow); //Erase element called to avoid duplicate weights and invisible walls
+      this.eraseElement(selectedColumn, selectedRow);
     }
   };
 
@@ -284,12 +284,6 @@ class GuiController {
      * Animation for visited cells
      */
     this.visited.forEach((node, index) => {
-      let weight = false;
-      this.weights.forEach((data) => {
-        if (node.x == data.x && node.y == data.y) weight = true;
-      });
-      if (weight) return;
-
       if (
         node.x == this.inputGrid.endPoint.x &&
         node.y == this.inputGrid.endPoint.y
@@ -301,7 +295,15 @@ class GuiController {
       )
         return;
       setTimeout(() => {
-        this.htmlActions.setElement(node.x, node.y, cellTypes.visitedCell);
+        if(this.typeOfCell[node.y][node.x] === cellTypes.obstacleLight){
+          this.htmlActions.setElement(node.x, node.y, cellTypes.visitedLight);
+        } else if(this.typeOfCell[node.y][node.x] === cellTypes.obstacleMedium){
+          this.htmlActions.setElement(node.x, node.y, cellTypes.visitedMedium);
+        } else if(this.typeOfCell[node.y][node.x] === cellTypes.obstacleHeavy){
+          this.htmlActions.setElement(node.x, node.y, cellTypes.visitedHeavy);
+        } else {
+          this.htmlActions.setElement(node.x, node.y, cellTypes.visitedCell);
+        }
       }, index * this.timeout);
       this.timeWaited++;
     });
@@ -325,7 +327,7 @@ class GuiController {
         this.htmlActions.setElement(node.x, node.y, cellTypes.shortestPathCell);
       });
     }, this.timeWaited * this.timeout);
-
+    
     this.alreadyExecuted = true;
   };
 }
