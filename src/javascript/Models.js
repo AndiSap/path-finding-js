@@ -10,7 +10,10 @@ const colors = {
   plain: "white",
   obstacleLight: "#DCDCDC",
   obstacleMedium: "#C0C0C0",
-  obstacleHeavy: "#696969"
+  obstacleHeavy: "#696969",
+  visitedLight: "#B2DBF9",
+  visitedMedium: "#99D2F9",
+  visitedHeavy: "#79C2F9"
 };
 
 /**
@@ -47,6 +50,9 @@ const cellTypes = {
   obstacleMedium: "medium",
   obstacleHeavy: "heavy",
   visitedCell: "visited",
+  visitedLight: "visitedLight",
+  visitedMedium: "visitedMedium",
+  visitedHeavy: "visitedHeavy",
   shortestPathCell: "shortestPath"
 };
 
