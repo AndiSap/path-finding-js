@@ -1,6 +1,6 @@
 {
   "name": "path-finding-js",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "JS logic for visualizing path finding algorithm",
   "main": "src/index.js",
   "type": "module",
@@ -28,5 +28,8 @@
     "express": "^4.17.1",
     "heap": "^0.2.6",
     "http-server": "^0.12.1"
+  },
+  "devDependencies": {
+    "minimist": ">=0.2.1"
   }
 }
