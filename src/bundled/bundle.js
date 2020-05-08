@@ -1313,9 +1313,9 @@ const colors = {
   obstacleLight: "#D9D9D9",
   obstacleMedium: "#B3B3B3",
   obstacleHeavy: "#8C8C8C",
-  visitedLight: "#a8d2f0",
-  visitedMedium: "#7cbce9",
-  visitedHeavy: "#51a5e1"
+  visitedLight: "#A8D2F0",
+  visitedMedium: "#7CBCE9",
+  visitedHeavy: "#51A5E1"
 };
 
 /**
