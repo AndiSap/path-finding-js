@@ -5,15 +5,15 @@ const colors = {
   start: "#82E0AA",
   end: "#D98880",
   visited: "#D6EAF8",
-  wall: "black",
+  wall: "#666666",
   shortestPath: "#FFEE58",
   plain: "white",
-  obstacleLight: "#DCDCDC",
-  obstacleMedium: "#C0C0C0",
-  obstacleHeavy: "#696969",
-  visitedLight: "#B2DBF9",
-  visitedMedium: "#99D2F9",
-  visitedHeavy: "#79C2F9"
+  obstacleLight: "#D9D9D9",
+  obstacleMedium: "#B3B3B3",
+  obstacleHeavy: "#8C8C8C",
+  visitedLight: "#A8D2F0",
+  visitedMedium: "#7CBCE9",
+  visitedHeavy: "#51A5E1"
 };
 
 /**
