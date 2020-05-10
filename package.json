@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "browserify src/javascript/index.js -o src/bundled/bundle.js [ babelify --presets: ['es2015', 'stage-1', 'react']] &&  node entryPoint.js"
+    "start": "browserify src/javascript/index.js -o src/bundled/bundle.js [ babelify --presets: ['es6', 'stage-1', 'react']] && npm run transform && npm run uglify && node entryPoint.js",
+    "transform": "babel --plugins @babel/plugin-transform-arrow-functions src/bundled/bundle.js -o src/bundled/bundle.js",
+    "uglify": "uglifyjs src/bundled/bundle.js --output src/bundled/bundle.js"
   },
   "repository": {
     "type": "git",
@@ -28,9 +30,14 @@
     "express": "^4.17.1",
     "heap": "^0.2.6",
     "http-server": "^0.12.1",
-    "serve-favicon": "^2.5.0"
+    "serve-favicon": "^2.5.0",
+    "uglify-js-es6": "^2.8.9"
   },
   "devDependencies": {
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-transform-arrow-functions": "^7.8.3",
+    "@babel/plugin-proposal-class-properties": "^7.1.0",
     "minimist": ">=0.2.1"
   }
 }
