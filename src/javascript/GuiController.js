@@ -228,6 +228,20 @@ class GuiController {
     this.typeOfCell[row][col] = cellTypes.plain;
     console.log(`Erased: (${col}, ${row})`);
   };
+  
+  /**
+   * resets the algorithm (erases visited cells and shortest path cells) 
+   */
+   resetAlgorithm = () => {
+    console.log("Reseting algorithm");
+    this.visited.forEach((data) => {
+      this.htmlActions.setElement(data.x, data.y, this.typeOfCell[data.y][data.x]);
+    });
+    
+    this.timeWaited = 0;
+    this.visited = [];
+    this.alreadyExecuted = false;
+  };
 
   /**
    * clears grid from all ui changes and resets saved start/endpoint and walls
