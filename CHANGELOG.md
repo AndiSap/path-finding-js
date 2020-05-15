@@ -1,5 +1,11 @@
 # path finding js source code
 
+## 1.0.1
+
+### Features
+
+    - add reset path button and logic
+
 ## 1.0.0
 
 first official version released (05/05/2020)
