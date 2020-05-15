@@ -6,9 +6,11 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "browserify src/javascript/index.js -o src/bundled/bundle.js [ babelify --presets: ['es6', 'stage-1', 'react']] && npm run transform && npm run uglify && node entryPoint.js",
+    "start": "tsc && browserify src/javascript/index.js -o src/bundled/bundle.js [ babelify --presets: ['es6', 'stage-1', 'react']] && npm run transform && npm run uglify && node entryPoint.js",
     "transform": "babel --plugins @babel/plugin-transform-arrow-functions src/bundled/bundle.js -o src/bundled/bundle.js",
-    "uglify": "uglifyjs src/bundled/bundle.js --output src/bundled/bundle.js"
+    "uglify": "uglifyjs src/bundled/bundle.js --output src/bundled/bundle.js",
+    "tsc": "tsc",
+    "tslint": "tslint"
   },
   "repository": {
     "type": "git",
@@ -24,6 +26,9 @@
     }
   ],
   "dependencies": {
+    "@types/heap": "^0.2.28",
+    "@types/node": "^14.0.1",
+    "@typescript-eslint/parser": "^2.33.0",
     "babelify": "^10.0.0",
     "browserfy": "^1.0.0",
     "eslint": "^6.8.0",
@@ -31,13 +36,20 @@
     "heap": "^0.2.6",
     "http-server": "^0.12.1",
     "serve-favicon": "^2.5.0",
+    "typescript": "^3.9.2",
     "uglify-js-es6": "^2.8.9"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.6",
-    "@babel/plugin-transform-arrow-functions": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.1.0",
+    "@babel/plugin-transform-arrow-functions": "^7.8.3",
+    "@typescript-eslint/eslint-plugin": "^2.33.0",
+    "eslint-config-airbnb-typescript": "^7.2.1",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react-hooks": "^2.5.1",
     "minimist": ">=0.2.1"
   }
 }

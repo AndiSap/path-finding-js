@@ -3,3 +3,6 @@ node_modules/
 
 # Netbeans stuff
 nbproject/
+
+# Javascript build data
+src/build

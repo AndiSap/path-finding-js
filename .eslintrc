@@ -1,6 +1,37 @@
 {
-  "printWidth": 160,
-  "editor.codeActionsOnSave": {
-    "source.fixAll": true
+  // "printWidth": 160,
+  // "editor.codeActionsOnSave": {
+  //   "source.fixAll": true
+  // },
+  // "comma-dangle": ["error", "never"],
+  // "eslint.validate": ["typescript", "typescriptreact"]
+  // "extends": "airbnb",
+  "extends": ["airbnb-typescript"],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "env": {
+    "es6": true
+  },
+  "rules": {
+    "semi": "error",
+    "quotes": [2, "single"],
+    "comma-dangle": "error",
+    "max-len": ["error", 180],
+    "no-param-reassign": "off",
+    "class-methods-use-this": "off",
+    "no-plusplus": "off",
+    "no-continue": "off",
+    "import/prefer-default-export": "off",
+    "lines-between-class-members": "off",
+    "import/newline-after-import": "off"
+    // "max-len": ["error", { "code": 180 }]
+  },
+  "parserOptions": {
+    "project": "./tsconfig.json",
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
+    }
   }
 }
