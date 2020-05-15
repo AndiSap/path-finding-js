@@ -23,6 +23,7 @@ const htmlElement = {
   grid: "col-md-9",
   clearButton: "clearButton",
   startAlgorithmButton: "startAlgorithmButton",
+  resetAlgorithmButton: "resetAlgorithmButton",
   startPointButton: "chooseStartButton",
   endPointButton: "chooseEndButton",
   dijkstra: "dijkstra",

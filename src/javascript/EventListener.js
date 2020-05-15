@@ -22,6 +22,7 @@ class EventListener {
   createListeners = () => {
     this.onClearButtonClicked();
     this.onStartAlgorithmButtonClicked();
+	this.onResetAlgorithmButtonClicked();
     this.onChooseStartPointButtonClicked();
     this.onChooseEndPointButtonClicked();
     this.onSetWeights();
@@ -55,6 +56,22 @@ class EventListener {
         if (!this.guiController.alreadyExecuted)
           this.guiController.startAlgorithm(this.guiController.algorithm);
       });
+  };
+  
+  /**
+   * Exectued once reset algorithm button is clicked
+   */
+  onResetAlgorithmButtonClicked = () => {
+    document
+      .getElementById(htmlElement.resetAlgorithmButton)
+      .addEventListener(events.click, () => {
+        console.log("Reset algorithm button clicked");
+        if(this.guiController.alreadyExecuted){
+          this.guiController.resetAlgorithm();
+        } else {
+          console.log("Algorithm not yet exectued");
+        }
+    });
   };
 
   /**
